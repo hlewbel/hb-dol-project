@@ -1,0 +1,86 @@
+Notes_Links
+
+Google Places API: https://developers.google.com/places/web-service/search
+    - Nearby search: A Nearby Search lets you search for places within a specified area. You can refine your search request by supplying keywords or specifying the type of place you are searching for.
+    - Radar Search API: Search up to 200 places at once, area of interest in geographic location
+    - Searching: By default, each Nearby Search or Text Search returns up to 20 establishment results per query; however, each search can return as many as 60 results, split across three pages.
+
+Backend: Requests library --> get request --> store those JSONs on disk. In python have a script to output to disk
+
+Cut the csv down so only use that data
+
+HELPFUL LINKS:
+
+1. https://app.moqups.com/edit/page/ad64222d5
+2. Example of google places api output: https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8670,151.1957&radius=500&types=food&name=cruise&key=AIzaSyBANee_piVPcowuyiHLV4sa9kkxUV5vv94
+3. strptime: http://www.tutorialspoint.com/python/time_strptime.htm
+
+--------
+
+To Do List:
+
+8/9 (Leslie):
+1. Match DOL data and Google data before seeding database - match on name & exact location
+    - Create a function that takes business name and address, checks google API results for exact match. If it exists then add the data to the database
+2. Query Google API by zip to get all the businesses with that zip code - then match to ones in the DOL data later? Does this address the 1000 queries/day?
+3. Start model.py work
+
+Questions [To Ask]:
+1. [Michael]: Is violation data about business HQs or city location?
+    trade name location (establishment/branch location not HQs)
+2. [Michael]: What about null trade names, official names?
+        Hannah error - no null trade names
+3. [Michael]: Relevancy, change of ownership, etc
+    not updated later - possible ownership has changed
+4. [Michael]: What about businesses that change/address the issue? Any that don't?
+    No data
+5. [Michael]: Severity - how to judge?
+    Can make it up: Fair Labor Standards Act cases - look at amt of min wage violation
+        (flsa_mw_bw_atp_amt) - making less than min wage $7.25. Divide by # employees
+        for amt per person
+        or backwages/employee (bw_atp_amt/employee) -- atp is agree to pay
+        *** cut out all cases if backwages = 0 AND cmp_assd_cnt (civil monetary penalties)
+6. [Teacher]: How do you handle images in a table? URLs?
+    - is there a time format for columns?
+    - nullable=true means it can be null right? -- yes
+    - can number_violations be nullable=True if it has a 0 in that box??
+    ---- done
+    - When do you specify a relationship? Do I need any?
+
+8/10/2016:
+1. Model.py: Add relationships with back references for the tables. - DONE
+2. Seed database with seed.py for now using the DOL data and desired columns - TBD
+
+Questions:
+1. Teacher
+    - backref - orderby?
+    - google maps - bonnie mentioned name search
+        First get place ID to get name, then do Place Details --> 2 calls
+    - order of columns in model file --> order in table right?
+2. Michael
+    - incomplete zip codes! what's w/ that?? - PR, and leading 0s
+    - cut down data to local businesses
+
+8/11/2016
+TO DO LIST:
+1. Seed file: 
+    # Convert DOL data to datetime object when importing into database
+    # look at rating's seed.py file
+    # look at this line and modify with lower/upper case as applicable:
+    # ---> released_at = datetime.datetime.strptime(released_str, "%d-%b-%Y")
+    # *** UPDATE THE SEED FILE
+
+Questions:
+1. Order of columns in the model file - how about in the seed file? match?
+
+TO DO TOMORROW:
+1. check on numeric type and apply that in the model.py for the bw_atp_amt
+
+8/12/2016
+1. Debugging tip for strange characters:
+    run on command line to see characters: od -c seed.py | less
+
+TO DO:
+1. create template page with .html page for displaying the case data
+    look at movie_list.html
+2. add the google api info to googleapi.py
