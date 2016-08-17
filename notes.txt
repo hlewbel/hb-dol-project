@@ -76,11 +76,37 @@ Questions:
 TO DO TOMORROW:
 1. check on numeric type and apply that in the model.py for the bw_atp_amt
 
-8/12/2016
+8/12/2016 - help from William (CTO club)
 1. Debugging tip for strange characters:
     run on command line to see characters: od -c seed.py | less
+2. display the data clearly on command line with -S
+
+COMPLETED: 
+1. Got data successfully seeded into database dol_project
+2. drop and recreate table manually and checked it.
+3. eliminated bad data from csv
 
 TO DO:
 1. create template page with .html page for displaying the case data
     look at movie_list.html
 2. add the google api info to googleapi.py
+
+8/15/2016 - 
+
+1. Started to figure out google API and trying to seed that data/pseudocode.
+2. Uber field trip.
+
+8/16/2016
+
+1. pip install GooglePlaces, pip install python-google-places
+2. Create seed file for google api seed_google.py with functions to break down 
+    portions of the google api calls. Also added loop to go through each case
+    extract the DOL data and feed that into the google functions for lat/long
+    calc, to get place_id, and google places to get review info for a business.
+
+Mentor Sri - met at starbucks and worked on FE dev thoughts and plan.
+
+3. test with curl 'url' (lack of quotes had it strip off the key) - needed to activate the key
+4. url encoding to deal w/ spaces etc
+5. 
+

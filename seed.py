@@ -17,8 +17,12 @@ def load_cases():
 
     # Delete all rows in table, so if we need to run this a second time, we wont be trying to add duplicate items
     # Q: this line fails so temporarily deleting it for debugging help
-#    Case.query.delete()
+    Case.query.delete()
 
+    # use this way to parse csv file rather than rstrip and split on ","
+    # because some of the addresses have commas inside their street address
+    # designating suite
+    # removed header from file
     with open('test_data/dol_data_subset.csv') as csvfile:
         dol_file = csv.reader(csvfile)
         for row in dol_file:

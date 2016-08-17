@@ -16,7 +16,7 @@ db = SQLAlchemy()
 # db is inheriting from the .Model class and gives the structure
 
 class Business(db.Model):
-    """User of ratings website."""
+    """Matched business data of Google business and DOL business only"""
 
     __tablename__ = "businesses"
 
