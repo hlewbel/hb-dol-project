@@ -1,13 +1,15 @@
-# # Create a seed file to extract Google business data from the Google API
-# and seed a database with that data0. 
+"""Create a seed file to extract Google business data from the Google API
+    and seed a database with that data. 
 
-#Steps:
-# Extract fields from DOL database (name, address) - SQLAlchemy
-# 1. call Place Search API to get place_id using geocoding converting
-#       address from DOL file to lat/long (geopy?)
-# 2. using place_id call Place details API to get reviews/ratings (cap at 3 each or all?)
-# 3. pull down info for indiv google business based on trade name and address search fields
-# 4. if trade name and address add matched items to new database (??)
+    Pseudocode:
+    0. Extract fields from DOL database (name, address) - SQLAlchemy
+    1. call Place Search API to get place_id using geocoding converting
+          address from DOL file to lat/long (geopy?)
+    2. using place_id call Place details API to get reviews/ratings (cap at 3 each or all?)
+    3. pull down info for indiv google business based on trade name and address search fields
+    4. if trade name and address add matched items to new database (??)
+
+"""
 
 #### bonnie doing:
 # dir(google_places)
@@ -50,27 +52,33 @@ from model import Business, Case, Violation, GoogleReview, connect_to_db, db
 from server import app
 from googleplaces import GooglePlaces, types, lang
 
-import sys #for use with sys.exit(0) debugging which stops the program at that point
-import urllib2 # for use with the URL handling in address_to_longlat()
-import urllib # for urlencode since there is no urllib2.urlencode
+import sys      #for use with sys.exit(0) debugging which stops the program at that point
+import urllib2  # for use with the URL handling in address_to_longlat()
+import urllib   # for urlencode since there is no urllib2.urlencode
 import json
+import os       # for use with keys in different file
 
-#TBD - store this in the secrets file and access how?
-API_KEY = ""
+#Google Maps API Key (activated) for GeoCoding
+API_KEY = os.environ['GOOGLE_MAP_API']
 
-def address_to_longlat(street, city, state):
+def google_maps_address_to_json(street, city, state):
+    """Convert individual DOL address to Google Maps API Geocoded JSON object"""
 
     address = street + ", " + city + ", " + state
     print address
-
-    #convert address to long/latitude
     
+    # TEST: use hard coded address to generate doctest in latlong_from_json()
+    # longlat_url_dict = {
+    #     'address' : '1095  Carolan Avenue, Burlingame, CA',
+    #     'key' : os.environ['GOOGLE_MAP_API']
+    #     }
+
     longlat_url_dict = {
         'address' : address,
-        'key' : 'AIzaSyBANee_piVPcowuyiHLV4sa9kkxUV5vv94'
+        'key' : os.environ['GOOGLE_MAP_API']
         }
 
-    # urlencode to handle the address with its variations
+    # urlencode to handle the address with its variations (extra commas etc.)
     data = urllib.urlencode(longlat_url_dict)
     google_URL = "https://maps.googleapis.com/maps/api/geocode/json?%s" % data
     # print google_URL
@@ -79,6 +87,39 @@ def address_to_longlat(street, city, state):
     json_response = urllib2.urlopen(req)
     response = json.loads(json_response.read())
     # print json.dumps(response, indent=4)
+
+
+    # Note: Put the lat/long json parsing in separate function. Keep to test.
+    # results = response['results']
+    # # print len(results)
+    # result = results[0]
+    # # print json.dumps(result, indent=4)
+    # geometry = result['geometry']
+    # # print json.dumps(geometry, indent=4)
+    # location = geometry['location']
+    # # print json.dumps(location, indent=4)
+    # latitude = location['lat']
+    # print latitude
+    # longitude = location['lng']
+    # print longitude
+    
+    # test and stop program at this point to check output
+    # print "unformatted response:"
+    # print response
+    # sys.exit(0)
+
+    # return latitude, longitude
+
+    return response
+
+def latlong_from_json(response):
+    """Get latitude and longitude from JSON.
+
+        >>> input = {u'status': u'OK', u'results': [{u'geometry': {u'location': {u'lat': 37.587666, u'lng': -122.3623954}, u'viewport': {u'northeast': {u'lat': 37.58901498029149, u'lng': -122.3610464197085}, u'southwest': {u'lat': 37.5863170197085, u'lng': -122.3637443802915}}, u'location_type': u'ROOFTOP'}, u'address_components': [{u'long_name': u'1095', u'types': [u'street_number'], u'short_name': u'1095'}, {u'long_name': u'Carolan Avenue', u'types': [u'route'], u'short_name': u'Carolan Ave'}, {u'long_name': u'Burlingame Gardens', u'types': [u'neighborhood', u'political'], u'short_name': u'Burlingame Gardens'}, {u'long_name': u'Burlingame', u'types': [u'locality', u'political'], u'short_name': u'Burlingame'}, {u'long_name': u'San Mateo County', u'types': [u'administrative_area_level_2', u'political'], u'short_name': u'San Mateo County'}, {u'long_name': u'California', u'types': [u'administrative_area_level_1', u'political'], u'short_name': u'CA'}, {u'long_name': u'United States', u'types': [u'country', u'political'], u'short_name': u'US'}, {u'long_name': u'94010', u'types': [u'postal_code'], u'short_name': u'94010'}], u'place_id': u'ChIJUe9S2yV2j4ARuudMEeoZ1fQ', u'formatted_address': u'1095 Carolan Ave, Burlingame, CA 94010, USA', u'types': [u'street_address']}]}
+        >>> latlong_from_json(input)
+        (37.587666, -122.3623954)
+
+    """
 
     results = response['results']
     # print len(results)
@@ -89,16 +130,18 @@ def address_to_longlat(street, city, state):
     location = geometry['location']
     # print json.dumps(location, indent=4)
     latitude = location['lat']
-    print latitude
+    # print latitude
     longitude = location['lng']
-    print longitude
     
-    # sys.exit(0)
+    print latitude, longitude
+    
+    # test and stop program at this point to check output
+    #sys.exit(0)
 
     return latitude, longitude
 
 
-def google_place_id(dol_name, dol_longlat):
+def google_place_id(dol_name, latitude, longitude):
 
     # return a google place_id
 
@@ -115,6 +158,9 @@ def group_by_city():
     return None
 
 if __name__ == "__main__":
+    import doctest
+    #doctest.testmod() #Q: what is this for?
+
     connect_to_db(app)
     #db.droptable # ??? --- or command line(> dropdb dol_project) or in each table
     db.create_all()
@@ -125,8 +171,10 @@ if __name__ == "__main__":
     # get each case details (case_id, street_addr_1_txt, cty_name, st_cd)
     # and store in a dictionary by case_id
     for case in cases:
-        dol_longlat = address_to_longlat(case.street_addr_1_txt, case.cty_nm, case.st_cd)
-        # place_id = google_place_id(case.trade_nm, dol_longlat)
+
+        response = google_maps_address_to_json(case.street_addr_1_txt, case.cty_nm, case.st_cd)
+        latitude, longitude = latlong_from_json(response)
+        # place_id = google_place_id(case.trade_nm, latitude, longitude)
         # google_business_reviews = google_place_search(place_id)
 
 

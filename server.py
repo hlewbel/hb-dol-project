@@ -7,6 +7,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 
 from model import connect_to_db, db, GoogleReview, Case, Violation, Business
 
+import os       # for use with keys in different file
 
 app = Flask(__name__)
 
@@ -14,8 +15,10 @@ app = Flask(__name__)
 # this is between the app and the browser to encrypt cookie
 # could put in .sh file and load from environment
 # make up a random string
-app.secret_key = "ABC"
+app.secret_key = os.environ['APP_SECRET_KEY']
+# app.secret_key = "ABC"
 
+# Q: did this get fixed?? pull down my code for Ratings to check. (TBD)
 # Normally, if you use an undefined variable in Jinja2, it fails silently.
 # This is horrible. Fix this so that, instead, it raises an error.
 app.jinja_env.undefined = StrictUndefined
