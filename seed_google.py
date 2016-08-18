@@ -133,7 +133,7 @@ def latlong_from_json(response):
     # print latitude
     longitude = location['lng']
     
-    print latitude, longitude
+    # print latitude, longitude
     
     # test and stop program at this point to check output
     #sys.exit(0)
@@ -142,28 +142,20 @@ def latlong_from_json(response):
 
 
 def google_place_id(dol_name, latitude, longitude):
-    """Get a Google place_id from the business name (from DOL data)
-        and the latitude and longitude
+    """Get a Google place_id by using incoming business name from DOL data
+        and the latitude and longitude acquired in the latlong_from_json()
 
-        >>> place_id = 
-        >>> print place_id
-
+        >>> dol_name = 'Avanti Pizza & Pasta (Belmont)'
+        >>> latitude = 37.5125194
+        >>> longitude = -122.2941039
+        >>> google_place_id(dol_name, latitude, longitude)
+        u'ChIJs_yO1mWfj4ARFzJiFB9k2mY'
 
     """
 
-    # google_places.nearby_search(name="Tai Wu", location="300 El Camino Real, Millbrae, CA")
-
-    # # make sure that dictionary key names are the same as 
-    # place_id_dict = {
-    #     'name' : dol_name,
-    #     'lat' : latitude,
-    #     'lng' : longitude,
-    #     'key' : os.environ['GOOGLE_MAP_API']
-    #     }
-
     location = str(latitude) + "," + str(longitude)
 
-    # make sure that dictionary key names are the same as 
+    # make sure that dictionary key names are the same as URL needs
     place_id_dict = {
         'location' : location,
         'radius' : 1,
@@ -171,26 +163,14 @@ def google_place_id(dol_name, latitude, longitude):
         'key' : os.environ['GOOGLE_MAP_API']
         }
 
-    # https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=
-    # -33.8670522,151.1957362&radius=500&type=restaurant&name=cruise&key=
-    # AIzaSyBANee_piVPcowuyiHLV4sa9kkxUV5vv94
-
     data = urllib.urlencode(place_id_dict)
     # print data
 
-    # data.lat or data = encoding(place_id_dict.latitude)??
-
-    # structure the google URL with the place_id_dict fill-ins:
-    # google_URL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + str(data['latitude']) + "," + str(data['longitude']) + "&radius=1&name=" + data['dol_name'] + "&key=" + data['key']
-
-
     google_URL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?%s" % data
     
-
+    #TESTING:
     #google_URL = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=37.587666,-122.3623954&radius=1&name=Auto+Pride+Car+Wash,+Inc.&key=AIzaSyBANee_piVPcowuyiHLV4sa9kkxUV5vv94'
-
     #print "Place ID Google URL: " + google_URL
-
     # sys.exit(0)
 
     req = urllib2.Request(google_URL)
@@ -207,7 +187,7 @@ def google_place_id(dol_name, latitude, longitude):
         # print json.dumps(result, indent=4)
         place_id = result['place_id']
         # print json.dumps(place_id, indent=4)
-        print place_id
+        # print place_id
 
         # sys.exit(0)
 
