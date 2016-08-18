@@ -81,7 +81,7 @@ def google_maps_address_to_json(street, city, state):
     # urlencode to handle the address with its variations (extra commas etc.)
     data = urllib.urlencode(longlat_url_dict)
     google_URL = "https://maps.googleapis.com/maps/api/geocode/json?%s" % data
-    # print google_URL
+    #print google_URL
     #print urllib.urlencode(google_URL)
     req = urllib2.Request(google_URL)
     json_response = urllib2.urlopen(req)
@@ -142,10 +142,81 @@ def latlong_from_json(response):
 
 
 def google_place_id(dol_name, latitude, longitude):
+    """Get a Google place_id from the business name (from DOL data)
+        and the latitude and longitude
 
-    # return a google place_id
+        >>> place_id = 
+        >>> print place_id
 
-    return place_id
+
+    """
+
+    # google_places.nearby_search(name="Tai Wu", location="300 El Camino Real, Millbrae, CA")
+
+    # # make sure that dictionary key names are the same as 
+    # place_id_dict = {
+    #     'name' : dol_name,
+    #     'lat' : latitude,
+    #     'lng' : longitude,
+    #     'key' : os.environ['GOOGLE_MAP_API']
+    #     }
+
+    location = str(latitude) + "," + str(longitude)
+
+    # make sure that dictionary key names are the same as 
+    place_id_dict = {
+        'location' : location,
+        'radius' : 1,
+        'name' : dol_name,
+        'key' : os.environ['GOOGLE_MAP_API']
+        }
+
+    # https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=
+    # -33.8670522,151.1957362&radius=500&type=restaurant&name=cruise&key=
+    # AIzaSyBANee_piVPcowuyiHLV4sa9kkxUV5vv94
+
+    data = urllib.urlencode(place_id_dict)
+    # print data
+
+    # data.lat or data = encoding(place_id_dict.latitude)??
+
+    # structure the google URL with the place_id_dict fill-ins:
+    # google_URL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + str(data['latitude']) + "," + str(data['longitude']) + "&radius=1&name=" + data['dol_name'] + "&key=" + data['key']
+
+
+    google_URL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?%s" % data
+    
+
+    #google_URL = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=37.587666,-122.3623954&radius=1&name=Auto+Pride+Car+Wash,+Inc.&key=AIzaSyBANee_piVPcowuyiHLV4sa9kkxUV5vv94'
+
+    #print "Place ID Google URL: " + google_URL
+
+    # sys.exit(0)
+
+    req = urllib2.Request(google_URL)
+    json_response = urllib2.urlopen(req)
+    response = json.loads(json_response.read())
+    # print json.dumps(response, indent=4)
+
+    results = response['results']
+    # print len(results)
+    # sys.exit(0)
+
+    try:
+        result = results[0]
+        # print json.dumps(result, indent=4)
+        place_id = result['place_id']
+        # print json.dumps(place_id, indent=4)
+        print place_id
+
+        # sys.exit(0)
+
+        # return a google place_id
+        return place_id
+    except Exception:
+        pass
+        #Q: Sarah suggested continue but this keeps failing and saying wrong place
+        # SyntaxError: 'continue' not properly in loop
 
 def google_place_search(place_id):
 
@@ -158,8 +229,6 @@ def group_by_city():
     return None
 
 if __name__ == "__main__":
-    import doctest
-    #doctest.testmod() #Q: what is this for?
 
     connect_to_db(app)
     #db.droptable # ??? --- or command line(> dropdb dol_project) or in each table
@@ -174,7 +243,7 @@ if __name__ == "__main__":
 
         response = google_maps_address_to_json(case.street_addr_1_txt, case.cty_nm, case.st_cd)
         latitude, longitude = latlong_from_json(response)
-        # place_id = google_place_id(case.trade_nm, latitude, longitude)
+        place_id = google_place_id(case.trade_nm, latitude, longitude)
         # google_business_reviews = google_place_search(place_id)
 
 
