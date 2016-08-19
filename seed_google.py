@@ -187,7 +187,7 @@ def google_place_id(dol_name, latitude, longitude):
         # print json.dumps(result, indent=4)
         place_id = result['place_id']
         # print json.dumps(place_id, indent=4)
-        # print place_id
+        #print place_id
 
         # sys.exit(0)
 
@@ -198,11 +198,44 @@ def google_place_id(dol_name, latitude, longitude):
         #Q: Sarah suggested continue but this keeps failing and saying wrong place
         # SyntaxError: 'continue' not properly in loop
 
-def google_place_search(place_id):
+def google_place_details(place_id):
+    """Get a Google business review data by using incoming Google place_id
 
+        >>> place_id = 'ChIJs_yO1mWfj4ARFzJiFB9k2mY'
+        >>> google_place_details(place_id)
+        #TBD: business details...
+
+    """
+
+    place_details_dict = {
+        'placeid' : place_id,
+        'key' : os.environ['GOOGLE_MAP_API']
+        }
+
+    data = urllib.urlencode(place_details_dict)
+    # print data
+
+    #example URL: 
+    #https://maps.googleapis.com/maps/api/place/details/json?placeid=ChIJN1t_tDeuEmsRUsoyG83frY4&key=YOUR_API_KEY
+    
+    google_URL = "https://maps.googleapis.com/maps/api/place/details/json?%s" % data
     # return an object (dictionary) of a business' google business reviews
 
-    return None
+    req = urllib2.Request(google_URL)
+    json_response = urllib2.urlopen(req)
+    response = json.loads(json_response.read())
+    # print json.dumps(response, indent=4)
+
+    results = response['results']
+    # print len(results)
+    # sys.exit(0)
+
+    #TBD: output the google review info to a file!
+    #if entry does not exist in database the add it
+
+    google_business_review = {TBD}
+    # return google review information for a single business in dict
+    return google_business_review
 # PLACEHOLDER: group business listings by city for later mapping (nearby?)
 def group_by_city():
 
@@ -224,7 +257,8 @@ if __name__ == "__main__":
         response = google_maps_address_to_json(case.street_addr_1_txt, case.cty_nm, case.st_cd)
         latitude, longitude = latlong_from_json(response)
         place_id = google_place_id(case.trade_nm, latitude, longitude)
-        # google_business_reviews = google_place_search(place_id)
+        google_business_review = google_place_details(place_id)
+
 
 
 
