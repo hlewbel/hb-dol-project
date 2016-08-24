@@ -9,6 +9,8 @@
     3. pull down info for indiv google business based on trade name and address search fields
     4. if trade name and address add matched items to new database (??)
 
+    #TBD: Store Google place_id and long/lat in final output database in conjunction with case ID
+
 """
 
 #### bonnie doing:
@@ -195,8 +197,6 @@ def google_place_id(dol_name, latitude, longitude):
         return place_id
     except Exception:
         pass
-        #Q: Sarah suggested continue but this keeps failing and saying wrong place
-        # SyntaxError: 'continue' not properly in loop
 
 def google_place_details(place_id):
     """Get a Google business review data by using incoming Google place_id
@@ -226,9 +226,113 @@ def google_place_details(place_id):
     response = json.loads(json_response.read())
     # print json.dumps(response, indent=4)
 
-    results = response['results']
-    # print len(results)
-    # sys.exit(0)
+    status = response['status']
+    print json.dumps(status, indent=4)
+
+    result = response['result']
+    # print json.dumps(result, indent=4)
+    icon = result['icon']
+    print json.dumps(icon, indent=4)
+    international_phone_number = result['international_phone_number']
+    print json.dumps(international_phone_number, indent=4)    
+    name = result['name']
+    print json.dumps(name, indent=4)
+    opening_hours = result['opening_hours']
+    print json.dumps(opening_hours, indent=4)
+    open_now = opening_hours['open_now']
+    print json.dumps(open_now, indent=4)
+    weekday_text = opening_hours['weekday_text']
+    print json.dumps(weekday_text, indent=4)
+    overall_rating = result['rating']
+    print "overall rating is: "
+    print json.dumps(overall_rating, indent=4)
+    types = result['types']
+    print json.dumps(types, indent=4)
+    url = result['url']
+    print json.dumps(url, indent=4)
+    website = result['website']
+    print json.dumps(website, indent=4)
+    vicinity = result['vicinity']
+    print json.dumps(vicinity, indent=4)
+
+    #get Google photos for the business
+    #TBD: add a try/except (may not have any photos)
+
+    photos = result['photos']
+    primary_photo = photos[0]
+    # print json.dumps(primary_photo, indent=4)
+
+    for photo in photos:
+        photo_reference = photo['photo_reference']
+        print json.dumps(photo_reference, indent=4)
+        height = photo['height']
+        print json.dumps(height, indent=4)
+        width = photo['width']
+        print json.dumps(width, indent=4)
+        html_attributions = photo['html_attributions']
+        print json.dumps(html_attributions, indent=4)
+
+        # create a dictionary to store all of the google photo details
+        photo_details_dict = {
+            'photo_reference' : photo_reference,
+            'height' : height,
+            'width' : width,
+            'html_attributions' : html_attributions,
+            # 'key' : os.environ['GOOGLE_MAP_API']
+            }
+
+        # data = urllib.urlencode(photo_details_dict)
+        # photos_base_URL = "https://maps.googleapis.com/maps/api/place/photo?%s" % data
+
+        #???? TBD - did i forget to do something here?
+
+    #get Google reviews for the business
+    #TBD: add a try/except (may not have any reviews)
+
+    reviews = result['reviews']
+
+    for review in reviews:
+        author_name = review['author_name']
+        print json.dumps(author_name, indent=4)
+        author_url = review['author_url']
+        print json.dumps(author_url, indent=4)
+        language = review['language']
+        print json.dumps(language, indent=4)
+        # profile_photo_url = review['profile_photo_url']
+        # print json.dumps(profile_photo_url, indent=4)
+        rating = review['rating']
+        print json.dumps(rating, indent=4)
+        text = review['text']
+        print json.dumps(text, indent=4)
+
+        # create a dictionary to store all of the google photo details
+        reviews_dict = {
+            'author_name' : author_name,
+            'author_url' : author_url,
+            'language' : language,
+            # 'profile_photo_url' : profile_photo_url,
+            'rating' : rating,
+            'text' : text,
+            # 'key' : os.environ['GOOGLE_MAP_API']
+            }
+        
+        sys.exit(0)
+
+    # **** STOPPED HERE ****
+
+    # Create a Google Review database with the details...
+    # Q: how to take all the info out and put it in columns...???
+    # -- create a dictionary with all the info??
+
+    google_business review = {
+            'reviews_dict' : reviews_dict,
+            'photo_details' : author_url,
+
+    }
+
+    return international_phone_number
+    # except Exception:
+    #     print "Something went wrong"
 
     #TBD: output the google review info to a file!
     #if entry does not exist in database the add it
@@ -236,8 +340,13 @@ def google_place_details(place_id):
     google_business_review = {TBD}
     # return google review information for a single business in dict
     return google_business_review
+
 # PLACEHOLDER: group business listings by city for later mapping (nearby?)
 def group_by_city():
+
+    return None
+
+def google_map_nearby():
 
     return None
 
@@ -257,7 +366,7 @@ if __name__ == "__main__":
         response = google_maps_address_to_json(case.street_addr_1_txt, case.cty_nm, case.st_cd)
         latitude, longitude = latlong_from_json(response)
         place_id = google_place_id(case.trade_nm, latitude, longitude)
-        google_business_review = google_place_details(place_id)
+        international_phone_number = google_place_details(place_id)
 
 
 
