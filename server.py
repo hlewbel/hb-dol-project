@@ -50,7 +50,22 @@ def case_detail(case_id):
     """Show info about a specific DOL case. For testing only"""
 
     case = Case.query.get(case_id)
-    return render_template("case.html", case=case) #Q: What is the white case??
+    return render_template("case.html", case=case) # orange is jinja in html, white is variable here
+
+
+
+# 1. create route that loads a search form - use ratings or shopping site
+# 2. create another route to load the result - get info from form and pass to a query within this route
+# look up return redirect how to load movie/profile
+
+# render form (see register_form in ratings)
+# # user enters data in form --> when submit (in html) and action has next url 
+# that takes to register_process()
+# get the form info - bind form info to these variables
+# new search = query table
+# ... redirect
+
+
 
 # Show an individual business
 @app.route("/business/<int:bus_id>")
@@ -65,6 +80,8 @@ def business_detail(bus_id):
 
     # Business object that has all the underlying fields/attributes
     # business = Business.query.get(bus_id)
+
+
     business = {"trade_nm": "My Business", "bus_id": 1234, "address": "1 Infinite Loop",\
             "city": "Cupertino", "state": "CA", "zipcode": 95014,\
             "g_overall_rating":4, "g_international_phone_number": "+1.408.974.6400",\

@@ -71,7 +71,7 @@ def load_cases():
 
 
             # Use SQLAlchemy to get all the cases from the dol_project database            
-            cases = Case.query.all()
+            # cases = Case.query.all()
 
             # * * * Call Google functions to get google business and review data
 
@@ -80,49 +80,61 @@ def load_cases():
             
             # for each case: if case_id already exists, pass; else add to case table
             #   get google info, and add to business table
-            for case in cases:
+            # for case in cases:
 
-                # Q: Chicken egg problem - how do I use case.whatever if I haven't defined it yet? How do I seed first?
-                # use case information to get google business info
-                response = google_maps_address_to_json(case.street_addr_1_txt, case.cty_nm, case.st_cd)
-                latitude, longitude = latlong_from_json(response)
-                place_id = google_place_id(case.trade_nm, latitude, longitude)
-                # TBD: Change below return item *** 
-                international_phone_number = google_place_details(place_id):
+            # Q: Chicken egg problem - how do I use case.whatever if I haven't defined it yet? How do I seed first?
+            # use case information to get google business info
+            response = google_maps_address_to_json(street_addr_1_txt, cty_nm, st_cd)
+            latitude, longitude = latlong_from_json(response)
+            place_id = google_place_id(trade_nm, latitude, longitude)
+            # TBD: Change below return item *** 
+            g_business_dict, reviews_list = google_place_details(place_id):
 
-                # making an instance of Case (orange model.py=white seed_business.py)
-                # SEED THE CASE TABLE THIS AFTER I GET THE PLACE_ID
-                case = Case(case_id=case_id,
-                            start_date=start_date,
-                            end_date=end_date,
-                            trade_nm=trade_nm,
-                            legal_name=legal_name,
-                            street_addr_1_txt=street_addr_1_txt,
-                            cty_nm=cty_nm,
-                            st_cd=st_cd,
-                            zip_cd=zip_cd,
-                            naic_cd=naic_cd,
-                            case_violtn_cnt=case_violtn_cnt,
-                            cmp_assd_ee_violtd_cnt=cmp_assd_ee_violtd_cnt,
-                            ee_violtd_cnt=ee_violtd_cnt,
-                            bw_atp_amt=bw_atp_amt,
-                            ee_atp_cnt=ee_atp_cnt,
-                            # TBD: place_id=place_id
-                            )
-                # TBD: Check if there's just an add or add one instead of add_all
-                db.session.add_all([case])
+            # TBD: seed busniess table first with case info from row (local vars) + g_business_dict
+
+            business = Business(place_id, latitude, longitude, trade_nm, legal_nm,
+                    address, city, state, zipcode, g_business_dict.g_international_phone_number,
+                    g_primary_img_url, g_weekday_text, g_overall_rating,
+                    g_maps_url, g_website, g_vicinity, dol_rating,
+                    dol_severity, dol_relevancy)
+
+            db.session.add(business)
+            db.session.commit(business)
+
+            # TBD: create and call reviews function to seed review table
+
+            # ...
+            db.session.add(review)
+            db.session.commit(review)
+
+            # making an instance of Case (orange model.py=white seed_business.py)
+            # SEED THE CASE TABLE THIS AFTER I GET THE PLACE_ID
+            case = Case(case_id=case_id,
+                        bus_id=business.bus_id,
+                        start_date=start_date,
+                        end_date=end_date,
+                        trade_nm=trade_nm,
+                        legal_name=legal_name,
+                        street_addr_1_txt=street_addr_1_txt,
+                        cty_nm=cty_nm,
+                        st_cd=st_cd,
+                        zip_cd=zip_cd,
+                        naic_cd=naic_cd,
+                        case_violtn_cnt=case_violtn_cnt,
+                        cmp_assd_ee_violtd_cnt=cmp_assd_ee_violtd_cnt,
+                        ee_violtd_cnt=ee_violtd_cnt,
+                        bw_atp_amt=bw_atp_amt,
+                        ee_atp_cnt=ee_atp_cnt,
+                        )
+
+            db.session.add(case)
+            db.session.commit(case)
+
 
 
 
             # * * * Seed GoogleReview table with DOL data - Q: HERE??? * * *
             seed_google_review_table(author_name, author_url, language, rating, text)
-
-            # * * * Seed business table with DOL data * * *
-            seed_bus_table(bus_id, place_id, latitude, longitude, trade_nm, legal_nm,
-                    address, city, state, zipcode, g_international_phone_number,
-                    g_primary_img_url, g_weekday_text, g_overall_rating,
-                    g_maps_url, g_website, g_vicinity, dol_rating,
-                    dol_severity, dol_relevancy)
 
 
             # #making an instance of Violation
@@ -137,6 +149,7 @@ def load_cases():
     # Commit the update to the database. Only do this once.
     db.session.commit()
 
+# replace this with above
 def seed_bus_table(bus_id, place_id, latitude, longitude, trade_nm, legal_nm,
                     address, city, state, zipcode, g_international_phone_number,
                     g_primary_img_url, g_weekday_text, g_overall_rating,
@@ -152,6 +165,8 @@ def seed_bus_table(bus_id, place_id, latitude, longitude, trade_nm, legal_nm,
     # * * Note: can set the Google-related columns to None for
     #     original seeding until get that info later
     #(orange model.py=white seed_business.py)
+
+    # DON"T NEED NONE ANYMORE
     business = Business(bus_id=bus_id,
                         place_id=None,
                         latitude=None,
@@ -176,6 +191,7 @@ def seed_bus_table(bus_id, place_id, latitude, longitude, trade_nm, legal_nm,
 
     return None
 
+#move this to the main function.
 def seed_google_review_table(author_name, author_url, language, rating, text):
 
     GoogleReview.query.delete()
@@ -348,8 +364,8 @@ def google_place_details(place_id):
     print json.dumps(name, indent=4)
     opening_hours = result['opening_hours']
     print json.dumps(opening_hours, indent=4)
-    open_now = opening_hours['open_now']
-    print json.dumps(open_now, indent=4)
+    # open_now = opening_hours['open_now']
+    # print json.dumps(open_now, indent=4)
 
     json_weekday_text = opening_hours['weekday_text']
     print json.dumps(json_weekday_text, indent=4)
@@ -369,6 +385,13 @@ def google_place_details(place_id):
     print json.dumps(website, indent=4)
     vicinity = result['vicinity']
     print json.dumps(vicinity, indent=4)
+
+    # TBD: Return 2 things:
+    # 1. Create dictionary to store all the g_business info and return to main function
+    # 2. Return reviews to main function with another function call to do the review processing separately from here down
+    # named: g_business_dict, reviews_list
+
+    # TBD: BREAK THIS OUT
 
     #TBD: add a try/except (may not have any reviews)
 
