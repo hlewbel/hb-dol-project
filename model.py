@@ -4,9 +4,9 @@
 from flask_sqlalchemy import SQLAlchemy
 #import correlation
 
-# This is the connection to the PostgreSQL database; we're getting this through
-# the Flask-SQLAlchemy helper library. On this, we can find the `session`
-# object, where we do most of our interactions (like committing, etc.)
+# This is the connection to the PostgreSQL database which comes through
+# the Flask-SQLAlchemy helper library. On this is the `session` object
+# where most interactions are (like committing, etc.)
 
 db = SQLAlchemy()
 
@@ -16,20 +16,34 @@ db = SQLAlchemy()
 # db is inheriting from the .Model class and gives the structure
 
 class Business(db.Model):
-    """Matched business data of Google business and DOL business only"""
+    """This is for an individual business comprised of both DOL and Google data"""
 
     __tablename__ = "businesses"
 
     # column is a method on db that allows you to create a column in database
+    # set nullable based on seeding rather than just on front end
     bus_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    bus_address = db.Column(db.String(64), nullable=False)
-    bus_city = db.Column(db.String(64), nullable=False)
-    bus_state = db.Column(db.String(64), nullable=False)
-    bus_phone = db.Column(db.String(64), nullable=False)
-    bus_url = db.Column(db.String(255), nullable=True)
-    bus_zipcode = db.Column(db.String(15), nullable=True)
-    google_img = db.Column(db.String(255), nullable=True)
-    
+    place_id = db.Column(db.Integer, nullable=False)
+    latitude = db.Column(db.Numeric(9,6), nullable=False)
+    longitude = db.Column(db.Numeric(9,6), nullable=False)
+    trade_nm = db.Column(db.String(128), nullable=False)
+    legal_nm = db.Column(db.String(128), nullable=True)
+    address = db.Column(db.String(128), nullable=False)
+    city = db.Column(db.String(64), nullable=False)
+    state = db.Column(db.String(64), nullable=False)
+    zipcode = db.Column(db.String(15), nullable=True)
+    g_international_phone_number = db.Column(db.String(64), nullable=True)
+    g_primary_img_url = db.Column(db.String(255), nullable=True)
+    g_weekday_text =  db.Column(db.String(255), nullable=True)
+    g_overall_rating = db.Column(db.Numeric(1,1), nullable=False)
+    # g_maps_types =                                          #Q: What type?
+    g_maps_url = db.Column(db.String(255), nullable=True)
+    g_website = db.Column(db.String(255), nullable=True)
+    g_vicinity = db.Column(db.String(120), nullable=True)
+    dol_rating = db.Column(db.Integer, nullable=False)      
+    dol_severity = db.Column(db.Numeric(12,2), nullable=False)    #(bw_atp_amt/employee)
+    dol_relevancy = db.Column(db.Integer, nullable=False)         # TBD
+
     # Define relationship from Business to GoogleReview table for each business
     # using it exp: google_review_instance.businesses
     google_review = db.relationship("GoogleReview",
@@ -47,49 +61,6 @@ class Business(db.Model):
         return "<Business bus_id=%s bus_address=%s, %s, %s, %s>" % (
             self.bus_id, self.bus_address, self.bus_city, self.bus_state, 
             self.bus_zipcode)
-
-    
-    # def predict_rating(self, movie):
-    #     """Predict user's rating of a movie."""
-
-    #     other_ratings = movie.ratings
-
-    #     similarities = [
-    #         (self.similarity(r.user), r)
-    #         for r in other_ratings
-    #     ]
-
-    #     similarities.sort(reverse=True)
-
-    #     similarities = [(sim, r) for sim, r in similarities if sim > 0]
-
-    #     if not similarities:
-    #         return None
-
-    #     numerator = sum([r.score * sim for sim, r in similarities])
-    #     denominator = sum([sim for sim, r in similarities])
-
-    #     return numerator/denominator
-
-    # def similarity(self, other):
-    #     """Return Pearson rating for user compared to other user."""
-
-    #     u_ratings = {}
-    #     paired_ratings = []
-
-    #     for r in self.ratings:
-    #         u_ratings[r.movie_id] = r
-
-    #     for r in other.ratings:
-    #         u_r = u_ratings.get(r.movie_id)
-    #         if u_r:
-    #             paired_ratings.append( (u_r.score, r.score) )
-
-    #     if paired_ratings:
-    #         return correlation.pearson(paired_ratings)
-
-    #     else:
-    #         return 0.0
 
 
 class Case(db.Model):
@@ -184,18 +155,20 @@ class GoogleReview(db.Model):
 
     review_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     bus_id = db.Column(db.Integer, db.ForeignKey('businesses.bus_id'), nullable=False)
-    reviewer_username = db.Column(db.String(64), nullable=False)
-    reviewer_rating = db.Column(db.Integer, nullable=False)
-    reviewer_comments = db.Column(db.String(255), nullable=True)
-    reviewer_photo = db.Column(db.String(255), nullable=True)
+    author_name = db.Column(db.String(64), nullable=False)
+    author_url = db.Column(db.String(8), nullable=True)
+    language = db.Column(db.String(8), nullable=True)
+    rating = db.Column(db.Integer, nullable=False)
+    text = db.Column(db.String(510), nullable=True)
+
     
     
     def __repr__(self):
         """Provide helpful representation when printed to console rather
         than just saying it's an object"""
 
-        return "<Google Review reviewer username=%s reviewer rating=%s>" % (
-            self.reviewer_username, self.reviewer_rating)
+        return "<Google Review author name=%s rating=%s language=%s text=%s>" % (
+            self.author_name, self.rating, self.language, self.text)
 
 
 ##############################################################################

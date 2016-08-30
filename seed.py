@@ -65,7 +65,10 @@ def load_cases():
             end_date = datetime.datetime.strptime(findings_end_date, "%m/%d/%y")
 
 
+        # ***** add google seed info in here.
+
         # making an instance of Case (orange model.py=white seed.py)
+        # SEED THE CASE TABLE THIS AFTER I GET THE PLACE_ID
             case = Case(case_id=case_id,
                         start_date=start_date,
                         end_date=end_date,
@@ -80,7 +83,8 @@ def load_cases():
                         cmp_assd_ee_violtd_cnt=cmp_assd_ee_violtd_cnt,
                         ee_violtd_cnt=ee_violtd_cnt,
                         bw_atp_amt=bw_atp_amt,
-                        ee_atp_cnt=ee_atp_cnt
+                        ee_atp_cnt=ee_atp_cnt,
+                        # TBD: place_id=place_id
                         )
 
             #making an instance of Violation

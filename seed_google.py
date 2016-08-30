@@ -13,33 +13,7 @@
 
 """
 
-#### bonnie doing:
-# dir(google_places)
-# help(google_places.place...?)
-# google places python wrapper get place id from human readable location
-# google places geocode location
-# from googleplaces import geocode_location
-# geocode_location("address")
-# add_place(...) -- see in slimkrazy
-# > import googleplaces
-# > my_latlong = geocode_location("address")
-# #instantiate using key: google_places = GooglePlaces("API key")
-# > google_places...
-# maybe don't want to add a place
-
-# > google_places.text_search(lat_lng = mylatlng,...)
-# > google_places.nearby_search(lat_ng = my_latlng, radius=1)
-# >dir(result)
-# ****
-# myl_atlng = geocode_location("address") --> lat long
-# result = google_places.nearby_search(lat_lng = my_latlng, radius=1 )
-# result
-# first_place = result.places[0] --> this seems to just give city back
-#
-# result.places[0].get_details()
-#result.places[0].review
-#myp_place.rating
-#
+# * * * HELPFUL NOTES DURING DEV * * *
 
 # Employee.query.filter_by(name='Liz')
 # Employee.query.filter(Employee.name == 'Liz')
@@ -47,6 +21,8 @@
 
 # can get actual restaurant from this: 
 # google_places.nearby_search(name="Tai Wu", location="300 El Camino Real, Millbrae, CA")
+
+# * * * * * * * * * * * * * * * * * * *
 
 from sqlalchemy import func
 
@@ -89,28 +65,6 @@ def google_maps_address_to_json(street, city, state):
     json_response = urllib2.urlopen(req)
     response = json.loads(json_response.read())
     # print json.dumps(response, indent=4)
-
-
-    # Note: Put the lat/long json parsing in separate function. Keep to test.
-    # results = response['results']
-    # # print len(results)
-    # result = results[0]
-    # # print json.dumps(result, indent=4)
-    # geometry = result['geometry']
-    # # print json.dumps(geometry, indent=4)
-    # location = geometry['location']
-    # # print json.dumps(location, indent=4)
-    # latitude = location['lat']
-    # print latitude
-    # longitude = location['lng']
-    # print longitude
-    
-    # test and stop program at this point to check output
-    # print "unformatted response:"
-    # print response
-    # sys.exit(0)
-
-    # return latitude, longitude
 
     return response
 
@@ -207,6 +161,8 @@ def google_place_details(place_id):
 
     """
 
+    #TBD: Check if db already has place_id before running this code
+    
     place_details_dict = {
         'placeid' : place_id,
         'key' : os.environ['GOOGLE_MAP_API']
@@ -239,10 +195,16 @@ def google_place_details(place_id):
     print json.dumps(name, indent=4)
     opening_hours = result['opening_hours']
     print json.dumps(opening_hours, indent=4)
-    open_now = opening_hours['open_now']
-    print json.dumps(open_now, indent=4)
-    weekday_text = opening_hours['weekday_text']
-    print json.dumps(weekday_text, indent=4)
+    # open_now = opening_hours['open_now']
+    # print json.dumps(open_now, indent=4)
+
+    json_weekday_text = opening_hours['weekday_text']
+    print json.dumps(json_weekday_text, indent=4)
+    #convert list to string w/ | delim 
+    #(TBD: convert back when read from db, split on |. pass to JS front end)
+    weekday_text = '|'.join(json_weekday_text)
+    print weekday_text
+
     overall_rating = result['rating']
     print "overall rating is: "
     print json.dumps(overall_rating, indent=4)
@@ -255,36 +217,36 @@ def google_place_details(place_id):
     vicinity = result['vicinity']
     print json.dumps(vicinity, indent=4)
 
-    #get Google photos for the business
-    #TBD: add a try/except (may not have any photos)
+    # #get Google photos for the business
+    # #TBD: add a try/except (may not have any photos)
 
-    photos = result['photos']
-    primary_photo = photos[0]
-    # print json.dumps(primary_photo, indent=4)
+    # photos = result['photos']
+    # primary_photo = photos[0]
+    # # print json.dumps(primary_photo, indent=4)
 
-    for photo in photos:
-        photo_reference = photo['photo_reference']
-        print json.dumps(photo_reference, indent=4)
-        height = photo['height']
-        print json.dumps(height, indent=4)
-        width = photo['width']
-        print json.dumps(width, indent=4)
-        html_attributions = photo['html_attributions']
-        print json.dumps(html_attributions, indent=4)
+    # for photo in photos:
+    #     photo_reference = photo['photo_reference']
+    #     print json.dumps(photo_reference, indent=4)
+    #     height = photo['height']
+    #     print json.dumps(height, indent=4)
+    #     width = photo['width']
+    #     print json.dumps(width, indent=4)
+    #     html_attributions = photo['html_attributions']
+    #     print json.dumps(html_attributions, indent=4)
 
-        # create a dictionary to store all of the google photo details
-        photo_details_dict = {
-            'photo_reference' : photo_reference,
-            'height' : height,
-            'width' : width,
-            'html_attributions' : html_attributions,
-            # 'key' : os.environ['GOOGLE_MAP_API']
-            }
+    #     # create a dictionary to store all of the google photo details
+    #     photo_details_dict = {
+    #         'photo_reference' : photo_reference,
+    #         'height' : height,
+    #         'width' : width,
+    #         'html_attributions' : html_attributions,
+    #         # 'key' : os.environ['GOOGLE_MAP_API']
+    #         }
 
-        # data = urllib.urlencode(photo_details_dict)
-        # photos_base_URL = "https://maps.googleapis.com/maps/api/place/photo?%s" % data
+    #     # data = urllib.urlencode(photo_details_dict)
+    #     # photos_base_URL = "https://maps.googleapis.com/maps/api/place/photo?%s" % data
 
-        #???? TBD - did i forget to do something here?
+    #     #???? TBD - did i forget to do something here?
 
     #get Google reviews for the business
     #TBD: add a try/except (may not have any reviews)
@@ -324,11 +286,11 @@ def google_place_details(place_id):
     # Q: how to take all the info out and put it in columns...???
     # -- create a dictionary with all the info??
 
-    google_business review = {
-            'reviews_dict' : reviews_dict,
-            'photo_details' : author_url,
+    # google_business_review = {
+    #         'reviews_dict' : reviews_dict,
+    #         'photo_details' : author_url,
 
-    }
+    # }
 
     return international_phone_number
     # except Exception:
@@ -337,9 +299,9 @@ def google_place_details(place_id):
     #TBD: output the google review info to a file!
     #if entry does not exist in database the add it
 
-    google_business_review = {TBD}
-    # return google review information for a single business in dict
-    return google_business_review
+    # google_business_review = {TBD}
+    # # return google review information for a single business in dict
+    # return google_business_review
 
 # PLACEHOLDER: group business listings by city for later mapping (nearby?)
 def group_by_city():

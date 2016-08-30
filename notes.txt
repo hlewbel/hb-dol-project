@@ -127,3 +127,42 @@ Chat with Sarah Springer:
 2. Live call for nearby businesses: JavaScript --> take place type and query Google places that match that type with radius (2-3mi)
     - look at Google Places API for front end call
 3. Google maps API lecture demo file: Polar bear demo for her own markers
+
+8/24:
+
+Brainstorm with Jessica:
+1. Redo schema - make sure all data is represented in columns
+2. Table/Class updates: Case, Violation, Business, Individual Reviews
+
+Steps:
+1. Modify model.py file to update tables
+2. In seed.py (make one seed file)
+    - for case in cases
+        - get a case (csv)
+        - get place_id (google API)
+        - get google individual review (google API)
+3. Make business instance of Business (seed.py)
+    - make sure business is seeded before reviews are (order of operations)
+4. store that business in db
+
+Important notes:
+1. 
+
+TBD: Severity: Remove all data that has back wages = 0 AND cmp_assd_cnt = 0 - no case really made in this case.
+
+****
+8/25:
+1. Conversation with Bonnie about not using place_id as primary key in Business table - ok. works now without
+    - also talked about moving both seed files into one (started it) in order to process the 
+        cases row by row and seed database with the match of them... started doing this. 
+        - she said i could still have 2 seed files and instead of calling database, could call each row (?)
+        ... 6 and 1/2 dozen. 
+2. Next step: i think merge the seed files and set up the columns for the business instance...
+    - make sure the names are right.
+
+8/26:
+To do list:
+1. Start front end for the project...
+2. base.html
+    - Change Frijole font: https://fonts.google.com/
+    - 
