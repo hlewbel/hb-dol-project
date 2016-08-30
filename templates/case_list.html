@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="well spaced" style="width:50%;">
+  <h2>Cases</h2>
+  <ul>
+  {% for case in cases %}
+    <li>
+      <a href="/cases/{{ case.case_id }}">{{ case.case_id }}</a>
+    </li>
+  {% endfor %}
+  </ul>
+</div>
+{% endblock %}
