@@ -65,14 +65,14 @@ def business_detail(bus_id):
 
     # Business object that has all the underlying fields/attributes
     # business = Business.query.get(bus_id)
-    # business = {"name": "My Business", "bus_id": 1234, "address": "1 Infinite Loop",\
-    #         "city": "Cupertino", "state": "CA", "zipcode": 95014,\
-    #         "g_overall_rating":4, "g_international_phone_number": "+1.408.974.6400",\
-    #         "g_weekday_text": "weekday text", "g_maps_url": "http://maps.google.com",\
-    #         "g_website":"http://www.apple.com", "g_vicinity": 4, "latitude":34.2,\
-    #         "longitude":47.3, "place_id": 234}
+    business = {"trade_nm": "My Business", "bus_id": 1234, "address": "1 Infinite Loop",\
+            "city": "Cupertino", "state": "CA", "zipcode": 95014,\
+            "g_overall_rating":4, "g_international_phone_number": "+1.408.974.6400",\
+            "g_weekday_text": "weekday text", "g_maps_url": "http://maps.google.com",\
+            "g_website":"http://www.apple.com", "g_vicinity": 4, "latitude":34.2,\
+            "longitude":47.3, "place_id": 234}
 
-    business = {"name": "My Business", "bus_id": 1234, "place_id": 234}
+    # business = {"name": "My Business", "bus_id": 1234, "place_id": 234}
     # business = Business.query.get(bus_id)
     return render_template("bus-review.html", business=business)
 
@@ -87,6 +87,6 @@ if __name__ == "__main__":
     connect_to_db(app)
 
     # Use the DebugToolbar
-    DebugToolbarExtension(app)
+    # DebugToolbarExtension(app)
 
     app.run(host='0.0.0.0') #need the host specification 0.0.0.0 for vagrant
