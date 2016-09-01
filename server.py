@@ -10,6 +10,7 @@ from model import connect_to_db, db, GoogleReview, Case, Violation, Business
 import os       # for use with keys in different file
 
 app = Flask(__name__)
+app.jinja_env.auto_reload = True #this fixes a refresh error bug
 
 # Required to use Flask sessions and the debug toolbar
 # this is between the app and the browser to encrypt cookie
@@ -18,9 +19,10 @@ app = Flask(__name__)
 app.secret_key = os.environ['APP_SECRET_KEY']
 # app.secret_key = "ABC"
 
-# Q: did this get fixed?? pull down my code for Ratings to check. (TBD)
-# Normally, if you use an undefined variable in Jinja2, it fails silently.
-# This is horrible. Fix this so that, instead, it raises an error.
+# Normally, if you refer to an undefined variable in a Jinja template,
+# Jinja silently ignores this. This makes debugging difficult, so the following
+# sets an attribute of the Jinja environment that says to make this an
+# error.
 app.jinja_env.undefined = StrictUndefined
 
 
@@ -42,8 +44,26 @@ def case_list():
     cases = Case.query.all()
     # cases = Case.query.order_by('case_id').all()
 
+    #Q: How to link to a specific case and render the next page?
+
+
     return render_template("case_list.html", cases=cases)
 
+@app.route("/businesses")
+def business_list():
+    """Show list of cases."""
+
+    business = Business.query.all()
+    # cases = Case.query.order_by('case_id').all()
+
+    #Q: How to link to a specific case and render the next page?
+    return render_template("business_list.html", business=business)
+
+@app.route("/about")
+def about():
+    """About the program text"""
+
+    return render_template("about.html")
 
 @app.route("/cases/<int:case_id>")
 def case_detail(case_id):

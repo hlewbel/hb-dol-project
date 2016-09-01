@@ -6,7 +6,8 @@
   <ul>
   {% for case in cases %}
     <li>
-      <a href="/cases/{{ case.case_id }}">{{ case.case_id }}</a>
+      <a href="/cases/{{ case.case_id }}">
+        Case ID: {{ case.case_id }} &nbsp; &nbsp; &nbsp; Business Name: {{case.trade_nm}}</a>
     </li>
   {% endfor %}
   </ul>
