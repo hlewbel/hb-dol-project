@@ -32,8 +32,8 @@ from googleplaces import GooglePlaces, types, lang
 #Google Maps API Key (activated) for GeoCoding
 API_KEY = os.environ['GOOGLE_MAP_API']
 
-def load_cases():
-    """Load cases from DOL data dol_data_subset.csv into database."""
+def seed_db():
+    """Seed database with case and business info using dol_data_subset.csv and Google business info."""
     # i think this should be cases
 
     # print to console
@@ -468,6 +468,5 @@ if __name__ == "__main__":
     #     place_id = google_place_id(case.trade_nm, latitude, longitude)
     #     international_phone_number = google_place_details(place_id)
 
-    # Q: What order should this function call be in?? TBD
-    load_cases()
+    seed_db()
 

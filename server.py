@@ -46,7 +46,7 @@ def case_list():
 
     #Q: How to link to a specific case and render the next page?
 
-
+    
     return render_template("case_list.html", cases=cases)
 
 @app.route("/businesses")
