@@ -65,6 +65,12 @@ def about():
 
     return render_template("about.html")
 
+@app.route("/dollinks")
+def dollinks():
+    """Helpful DOL related links"""
+
+    return render_template("dol_links.html")
+
 @app.route("/cases/<int:case_id>")
 def case_detail(case_id):
     """Show info about a specific DOL case. For testing only"""

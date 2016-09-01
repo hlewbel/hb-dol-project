@@ -83,14 +83,8 @@
                 <li><a href="/businesses">View All Businesses</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-              {% if "user_id" in session %}
-                  <li><a href="/users/{{ session['user_id'] }}">Profile</a></li>
-                  <li><a href="/logout">Logout</a></li>
-              {% else %}
-                  <li><a href="/about">About</a></li>
-                  <li><a href="/dolwage">Department of Labor</a></li>
-              {% endif %}
-
+                <li><a href="/about">About</a></li>
+                <li><a href="/dollinks">Helpful Links</a></li>
             </ul>
         </div>
         <!-- /.navbar-collapse -->
