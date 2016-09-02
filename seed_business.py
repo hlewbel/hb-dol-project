@@ -1,8 +1,4 @@
-# COMBINING seed.py with seed_google.py file 8/25/2016
-
 """Seed file for the Business database using both DOL data and Google data
-
-    * Note: this file combines both seed.py and seed_google.py into one file
 
     Pseudocode
     0. Get a DOL case & extract name and address fields (SQLAlchemy)
@@ -29,6 +25,7 @@ from model import Business, Case, Violation, GoogleReview, connect_to_db, db
 from server import app
 from googleplaces import GooglePlaces, types, lang
 
+
 #Google Maps API Key (activated) for GeoCoding
 API_KEY = os.environ['GOOGLE_MAP_API']
 
@@ -37,14 +34,17 @@ def seed_db():
     # i think this should be cases
 
     # print to console
-    print "Cases"
+    print "Seeding Database Tables"
 
-    # Delete all rows in table, so if we need to run this a second time, we wont be trying to add duplicate items
-    # Q: this line fails so temporarily deleting it for debugging help
+    # Delete all rows in tables, so if we need to run this a second time,
+    # we wont be trying to add duplicate items
     Case.query.delete()
+    Business.query.delete()
+    Violation.query.delete()
+    GoogleReview.query.delete()
 
-    # use this way to parse csv file rather than rstrip and split on ","
-    # because some of the addresses have commas & suites inside street address
+    # Parse csv file this wayrather than using rstrip and split on ","
+    # because some of the addresses have commas & suites and special chars
     with open('test_data/dol_data_subset.csv') as csvfile:
         dol_file = csv.reader(csvfile)
         for row in dol_file:
@@ -59,6 +59,7 @@ def seed_db():
             end_date = datetime.datetime.strptime(findings_end_date, "%m/%d/%y")
 
             # * * * TBD: EXTRACT YEAR FROM START_DATE & END_DATE * * *
+            # Use this for calculating dol_relevancy
             #   If start date exists, then extract year and month (don't care about day)
             #   If end date exists, then extract year and month (don't care about day)
 
@@ -70,45 +71,55 @@ def seed_db():
                 db.session.add_all([violation])
 
 
-            # Use SQLAlchemy to get all the cases from the dol_project database            
-            # cases = Case.query.all()
-
-            # * * * Call Google functions to get google business and review data
-
-            # get each case details (case_id, street_addr_1_txt, cty_name, st_cd)
-            # and store in a dictionary by case_id
-            
-            # for each case: if case_id already exists, pass; else add to case table
-            #   get google info, and add to business table
-            # for case in cases:
-
-            # Q: Chicken egg problem - how do I use case.whatever if I haven't defined it yet? How do I seed first?
-            # use case information to get google business info
+            # Call Google functions to get Google business and review data via APIs
             response = google_maps_address_to_json(street_addr_1_txt, cty_nm, st_cd)
             latitude, longitude = latlong_from_json(response)
             place_id = google_place_id(trade_nm, latitude, longitude)
-            # TBD: Change below return item *** 
             g_business_dict, reviews_list = google_place_details(place_id):
 
-            # TBD: seed busniess table first with case info from row (local vars) + g_business_dict
 
-            business = Business(place_id, latitude, longitude, trade_nm, legal_nm,
-                    address, city, state, zipcode, g_business_dict.g_international_phone_number,
-                    g_primary_img_url, g_weekday_text, g_overall_rating,
-                    g_maps_url, g_website, g_vicinity, dol_rating,
-                    dol_severity, dol_relevancy)
+            # Seed business table with case info from row (local vars) + g_business_dict
+            # Do not specify bus_id (PK) here as it's autoincrementing and doesn't need to be passed in
+            business = Business(place_id=place_id,
+                                latitude=latitude,
+                                longitude=longitude,
+                                trade_nm=trade_nm,
+                                legal_nm=legal_nm,
+                                street_addr_1_txt=street_addr_1_txt,
+                                cty_nm=cty_nm,
+                                st_cd=st_cd,
+                                zip_cd=zip_cd,
+                                g_international_phone_number=g_business_dict.g_international_phone_number,
+                                g_primary_img_url=g_business_dict.g_primary_img_url,
+                                g_weekday_text=g_business_dict.g_weekday_text,
+                                g_overall_rating=g_business_dict.g_overall_rating,
+                                g_maps_url=g_business_dict.g_maps_url,
+                                g_website=g_business_dict.g_website,
+                                g_vicinity=g_business_dict.g_vicinity,
+                                dol_rating=dol_rating,
+                                dol_severity=dol_severity,
+                                dol_relevancy=dol_relevancy
+                                )
 
             db.session.add(business)
             db.session.commit(business)
 
-            # TBD: create and call reviews function to seed review table
+            # Create instance review of GoogleReview and seed googlereviews table
+            # (orange model.py=white seed_business.py)
+            review = GoogleReview(bus_id=bus_id,
+                                author_name=author_name,
+                                author_url=author_url,
+                                language=language,
+                                rating=rating,
+                                text=text
+                                )
 
-            # ...
+
             db.session.add(review)
             db.session.commit(review)
 
-            # making an instance of Case (orange model.py=white seed_business.py)
-            # SEED THE CASE TABLE THIS AFTER I GET THE PLACE_ID
+            # Create an instance case of Case and seed cases table
+            # (orange model.py=white seed_business.py)
             case = Case(case_id=case_id,
                         bus_id=business.bus_id,
                         start_date=start_date,
@@ -124,92 +135,18 @@ def seed_db():
                         cmp_assd_ee_violtd_cnt=cmp_assd_ee_violtd_cnt,
                         ee_violtd_cnt=ee_violtd_cnt,
                         bw_atp_amt=bw_atp_amt,
-                        ee_atp_cnt=ee_atp_cnt,
+                        ee_atp_cnt=ee_atp_cnt
                         )
 
             db.session.add(case)
             db.session.commit(case)
 
 
-
-
-            # * * * Seed GoogleReview table with DOL data - Q: HERE??? * * *
-            seed_google_review_table(author_name, author_url, language, rating, text)
-
-
-            # #making an instance of Violation
-            # # If naic_cd exists in violation table, don't add
-            # if (Violation.query.filter_by(naic_cd=naic_cd).first() == None):
-            #     violation = Violation(naic_cd=naic_cd,
-            #                 naics_code_description=naics_code_description)
-            #     db.session.add_all([case,violation])
-            # else:
-            #     db.session.add_all([case])
-
     # Commit the update to the database. Only do this once.
+    #Q: is this still needed since above committed by instance??
     db.session.commit()
 
-# replace this with above
-def seed_bus_table(bus_id, place_id, latitude, longitude, trade_nm, legal_nm,
-                    address, city, state, zipcode, g_international_phone_number,
-                    g_primary_img_url, g_weekday_text, g_overall_rating,
-                    g_maps_url, g_website, g_vicinity, dol_rating,
-                    dol_severity, dol_relevancy):
-
-
-    # TBD: REMOVE in final code so doesn't re-seed every time
-    Business.query.delete()
-
-    # Q: Where do I get bus_id from if it's autoincrementing in model.py?
-
-    # * * Note: can set the Google-related columns to None for
-    #     original seeding until get that info later
-    #(orange model.py=white seed_business.py)
-
-    # DON"T NEED NONE ANYMORE
-    business = Business(bus_id=bus_id,
-                        place_id=None,
-                        latitude=None,
-                        longitude=None,
-                        trade_nm=trade_nm,
-                        legal_nm=legal_nm,
-                        address=address,
-                        city=city,
-                        state=state,
-                        zipcode=zipcode,
-                        g_international_phone_number=None,
-                        g_primary_img_url=None,
-                        g_weekday_text=None,
-                        g_overall_rating=None,
-                        g_maps_url=None,
-                        g_website=None,
-                        g_vicinity=None,
-                        dol_rating=None,      
-                        dol_severity=None,
-                        dol_relevancy=None,
-                        )
-
     return None
-
-#move this to the main function.
-def seed_google_review_table(author_name, author_url, language, rating, text):
-
-    GoogleReview.query.delete()
-
-    # * * * TBD: get in the review_id and bus_id
-
-    #(orange model.py=white seed_business.py)
-    review = GoogleReview(review_id=author_name,
-                        bus_id=bus_id,
-                        author_name=author_name,
-                        author_url=author_url,
-                        language=language,
-                        rating=rating,
-                        text=text,
-                        )
-
-    return None
-
 
 
 def google_maps_address_to_json(street, city, state):
@@ -326,9 +263,9 @@ def google_place_id(dol_name, latitude, longitude):
 def google_place_details(place_id):
     """Get a Google business review data by using incoming Google place_id
 
-        >>> place_id = 'ChIJs_yO1mWfj4ARFzJiFB9k2mY'
-        >>> google_place_details(place_id)
-        #TBD: business details...
+        # >>> place_id = 'ChIJs_yO1mWfj4ARFzJiFB9k2mY'
+        # >>> google_place_details(place_id)
+        # #TBD: business details...
 
     """
 
@@ -386,15 +323,25 @@ def google_place_details(place_id):
     vicinity = result['vicinity']
     print json.dumps(vicinity, indent=4)
 
+    # Create dictionary to store all the g_business info and return to main function
+    g_business_dict = {'status':status,
+                        'icon'=icon,
+                        'g_international_phone_number' = international_phone_number
+
+
+
+    }
+    # ****************************
     # TBD: Return 2 things:
     # 1. Create dictionary to store all the g_business info and return to main function
     # 2. Return reviews to main function with another function call to do the review processing separately from here down
     # named: g_business_dict, reviews_list
 
+    # dictionary to store all the g_business info and return to main function
+    reviews_list = {}
     # TBD: BREAK THIS OUT
 
     #TBD: add a try/except (may not have any reviews)
-
     reviews = result['reviews']
 
     for review in reviews:
@@ -425,12 +372,13 @@ def google_place_details(place_id):
         #     # 'key' : os.environ['GOOGLE_MAP_API']
         #     }
         
-        sys.exit(0)
+        # sys.exit(0)
 
     # **** STOPPED HERE ****
 
 
-    return international_phone_number
+    return g_business_dict, reviews_list
+
     # except Exception:
     #     print "Something went wrong"
 
@@ -455,18 +403,6 @@ if __name__ == "__main__":
     connect_to_db(app)
     #db.droptable # ??? --- or command line(> dropdb dol_project) or in each table
     db.create_all()
-
-    # # Use SQLAlchemy to get all the cases from the dol_project database
-    # cases = Case.query.all()
-
-    # # get each case details (case_id, street_addr_1_txt, cty_name, st_cd)
-    # # and store in a dictionary by case_id
-    # for case in cases:
-
-    #     response = google_maps_address_to_json(case.street_addr_1_txt, case.cty_nm, case.st_cd)
-    #     latitude, longitude = latlong_from_json(response)
-    #     place_id = google_place_id(case.trade_nm, latitude, longitude)
-    #     international_phone_number = google_place_details(place_id)
 
     seed_db()
 
