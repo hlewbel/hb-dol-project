@@ -113,6 +113,7 @@ def business_detail():
     # Use the case.bus_id FK to uniquely select a business
     bus_id = case.bus_id 
 
+    # Business object that has all the underlying fields/attributes
     business = Business.query.get(bus_id)
     if not business:
         #add a flash message (shopping cart)
@@ -124,30 +125,33 @@ def business_detail():
     elif (int(case.end_date.year) >= 2000):
         dol_relevancy = "This business had wage violations after the year 2000"
 
-    dol_amt_paid_per_employee = int(bw_atp_amt/case.ee_atp_cnt)
-
     #DOL Severity is determined by $ amount per employee 
-    if (amt_paid_per_employee > 1000):
-        dol_severity = 'Red: Employer had to pay more than $1000 per employee'
+    dol_amt_paid_per_employee = int(case.bw_atp_amt/case.ee_atp_cnt)
+
+    if (dol_amt_paid_per_employee = 0):
+        dol_severity = 'Violation Level = Green: Employer was not found to violate employee wages or data was insufficient to determine if there was a violation'
+        dol_rating = 5
+    elif (amt_paid_per_employee > 1000):
+        dol_severity = 'Violation Level = Red: Employer had to pay more than $1000 per employee'
+        dol_rating = 1
     elif (amt_paid_per_employee > 499) and (amt_paid_per_employee < 1001):
-        dol_severity = 'Orange: Employer had to pay each employee between $500-$1000'
+        dol_severity = 'Violation Level = Orange: Employer had to pay each employee between $500-$1000'
+        dol_rating = 3
     elif (amt_paid_per_employee < 500):
-        dol_severity = 'Yellow: Employer had to pay each employee less than $500'
+        dol_severity = 'Violation Level = Yellow: Employer had to pay each employee less than $500'
+        dol_rating = 4
+
 
     #rating,severity,relevancy
     dol_calc_dict = {
         'dol_amt_paid_per_employee' : dol_amt_paid_per_employee,
         'dol_severity' : dol_severity,
-        'dol_rating' : '4',
-        'dol_relevancy' dol_relevancy,
-        'key' : os.environ['GOOGLE_MAP_API']
+        'dol_rating' : dol_rating,
+        'dol_relevancy' dol_relevancy
         }
+
     # TBD: Could use a mock data source here for testing/getting FE to work
     # hard code it... online json editor to create json file and put it in here as paste
-
-    # Business object that has all the underlying fields/attributes
-    # business = Business.query.get(bus_id)
-
 
     # business = {"trade_nm": "My Business", "bus_id": 1234, "address": "1 Infinite Loop",\
     #         "city": "Cupertino", "state": "CA", "zipcode": 95014,\
@@ -157,8 +161,7 @@ def business_detail():
     #         "longitude":47.3, "place_id": 234}
 
 
-    # business = {"name": "My Business", "bus_id": 1234, "place_id": 234}
-    # business = Business.query.get(bus_id)
+
     return render_template("bus-review.html", business=business, case=case, dol_calc_dict=dol_calc_dict)
 
 
