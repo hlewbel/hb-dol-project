@@ -34,7 +34,8 @@ app.jinja_env.undefined = StrictUndefined
 def index():
     """Homepage."""
 
-    return render_template("homepage.html")
+    cases = Case.query.all()
+    return render_template("homepage.html", cases=cases)
 
 
 @app.route("/cases")
@@ -46,7 +47,7 @@ def case_list():
 
     #Q: How to link to a specific case and render the next page?
 
-    
+
     return render_template("case_list.html", cases=cases)
 
 @app.route("/businesses")
