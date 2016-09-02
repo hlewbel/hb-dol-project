@@ -11,7 +11,7 @@
           <div class="bus-details">
             <p>Business ID: <b>{{ business.bus_id }}</b></p>
             <p>Business Name: <b>{{ business.trade_nm}}</b></p>
-            <p>Address: <b>{{ business.address }}, {{business.city}}, {{business.state}} {{business.zipcode}}</b></p>
+            <p>Address: <b>{{ business.street_addr_1_txt }}, &nbsp; {{business.cty_nm}}, &nbsp; {{business.st_cd}} &nbsp; {{business.zip_cd}}</b></p>
             <p>Google Business Rating: <b>{{ business.g_overall_rating }}</b></p>
             <p>International Phone Number: <b>{{ business.g_international_phone_number }}</b></p>
             <p>Weekday Hours: <b>{{ business.g_weekday_text }}</b></p>
@@ -22,6 +22,9 @@
             <p>Longitude: <b>{{ business.longitude }}</b></p>
             <p>Place ID: <b>{{ business.place_id }}</b></p>
             
+                                            dol_rating=dol_rating,
+                                dol_severity=dol_severity,
+                                dol_relevancy=dol_relevancy
           </div>
     </div>
 

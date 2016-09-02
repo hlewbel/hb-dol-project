@@ -142,9 +142,6 @@ def seed_db():
             db.session.commit(case)
 
 
-    # Commit the update to the database. Only do this once.
-    #Q: is this still needed since above committed by instance??
-    db.session.commit()
 
     return None
 

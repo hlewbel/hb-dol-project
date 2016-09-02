@@ -56,6 +56,14 @@
           margin-top: 20px;
         }
 
+        #footer {
+          color: black;
+        }
+
+        #homepage-block {
+          color:black;
+        }
+
     </style>
 </head>
 <body>
@@ -71,7 +79,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">
+            <a class="navbar-brand" href="/" style="padding-right: 7px;">
               <img src="/static/dol_logo_01.png" class="img-dol" width=48 height=24>
             </a>
         </div>
@@ -80,7 +88,7 @@
         <div class="collapse navbar-collapse"
              id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                <li><a href="/" style="color: white;">Wage Justice</a></li> 
+                <li><a href="/" style="color: white; padding-left: 0px;" >Wage Justice</a></li> 
                 <li><a href="/cases">View All DOL Cases</a></li>
                 <li><a href="/businesses">View All Businesses</a></li>
             </ul>
@@ -100,6 +108,10 @@
 {% block content %}
 {% endblock %}
 </div>
+
+<footer id="footer">
+    <p>Copyright Hannah Lewbel 2016. All rights reserved.</p>
+</footer>
 
 <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>

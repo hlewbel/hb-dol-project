@@ -34,8 +34,7 @@ app.jinja_env.undefined = StrictUndefined
 def index():
     """Homepage."""
 
-    cases = Case.query.all()
-    return render_template("homepage.html", cases=cases)
+    return render_template("homepage.html")
 
 
 @app.route("/cases")
@@ -95,13 +94,54 @@ def case_detail(case_id):
 
 
 # Show an individual business
-@app.route("/business/<int:bus_id>")
-def business_detail(bus_id):
+@app.route("/business")
+def business_detail():
     """Show info about an individual business.
 
     This encompasses both Google Business info and DOL data
     """
 
+    search_trade_nm = request.args.get("trade_nm")
+    search_cty_nm = request.args.get("cty_nm")
+
+    # Get a single case with matching trade name and city
+    case = Case.query.filter(trade_nm==search_trade_nm,cty_nm==search_cty_nm).first()
+    if not case:
+        #add a flash message (shopping cart)
+        return redirect('/')
+
+    # Use the case.bus_id FK to uniquely select a business
+    bus_id = case.bus_id 
+
+    business = Business.query.get(bus_id)
+    if not business:
+        #add a flash message (shopping cart)
+        return redirect('/')
+
+    # DOL case relevancy (subjective and determined by year)
+    if (int(case.end_date.year) < 2000):
+        dol_relevancy = "This business had wage violations before the year 2000"
+    elif (int(case.end_date.year) >= 2000):
+        dol_relevancy = "This business had wage violations after the year 2000"
+
+    dol_amt_paid_per_employee = int(bw_atp_amt/case.ee_atp_cnt)
+
+    #DOL Severity is determined by $ amount per employee 
+    if (amt_paid_per_employee > 1000):
+        dol_severity = 'Red: Employer had to pay more than $1000 per employee'
+    elif (amt_paid_per_employee > 499) and (amt_paid_per_employee < 1001):
+        dol_severity = 'Orange: Employer had to pay each employee between $500-$1000'
+    elif (amt_paid_per_employee < 500):
+        dol_severity = 'Yellow: Employer had to pay each employee less than $500'
+
+    #rating,severity,relevancy
+    dol_calc_dict = {
+        'dol_amt_paid_per_employee' : dol_amt_paid_per_employee,
+        'dol_severity' : dol_severity,
+        'dol_rating' : '4',
+        'dol_relevancy' dol_relevancy,
+        'key' : os.environ['GOOGLE_MAP_API']
+        }
     # TBD: Could use a mock data source here for testing/getting FE to work
     # hard code it... online json editor to create json file and put it in here as paste
 
@@ -109,16 +149,17 @@ def business_detail(bus_id):
     # business = Business.query.get(bus_id)
 
 
-    business = {"trade_nm": "My Business", "bus_id": 1234, "address": "1 Infinite Loop",\
-            "city": "Cupertino", "state": "CA", "zipcode": 95014,\
-            "g_overall_rating":4, "g_international_phone_number": "+1.408.974.6400",\
-            "g_weekday_text": "weekday text", "g_maps_url": "http://maps.google.com",\
-            "g_website":"http://www.apple.com", "g_vicinity": 4, "latitude":34.2,\
-            "longitude":47.3, "place_id": 234}
+    # business = {"trade_nm": "My Business", "bus_id": 1234, "address": "1 Infinite Loop",\
+    #         "city": "Cupertino", "state": "CA", "zipcode": 95014,\
+    #         "g_overall_rating":4, "g_international_phone_number": "+1.408.974.6400",\
+    #         "g_weekday_text": "weekday text", "g_maps_url": "http://maps.google.com",\
+    #         "g_website":"http://www.apple.com", "g_vicinity": 4, "latitude":34.2,\
+    #         "longitude":47.3, "place_id": 234}
+
 
     # business = {"name": "My Business", "bus_id": 1234, "place_id": 234}
     # business = Business.query.get(bus_id)
-    return render_template("bus-review.html", business=business)
+    return render_template("bus-review.html", business=business, case=case, dol_calc_dict=dol_calc_dict)
 
 
 if __name__ == "__main__":

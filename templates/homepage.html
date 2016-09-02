@@ -2,10 +2,23 @@
 {% block content %}
 	<div id="homepage-block">
     	<h1 id="homepage-title">Wage Justice</h1>
-        <img src="/static/dol_logo_01.png" class="img-dol">
+    	form --> input box -> fill in and hit submit button --> sends new request to the server and generates new html page w/ results. use variable submitted in the form
+        <img src="/static/USDOL_Seal_circa_2015.svg.png" class="img-responsive" width=200px height=200px>
 
-	</div>
+        <form action="/business">
 
-    <p>form --> input box -> fill in and hit submit button --> sends new request to the server and generates new html page w/ results. use variable submitted in the form</p>
+            <label for="name-input">Business Name:</label>
+            <input type="text" name="trade_nm" id="bus-input" />
+
+            <label for="city-input">City Name:</label>
+            <input type="text" name="cty_nm" id="cty-input" />
+
+            <input type="submit" />
+
+        </form>
+    </div>
+
+
+
 
 {% endblock %}
