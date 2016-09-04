@@ -128,7 +128,7 @@ def business_detail():
     #DOL Severity is determined by $ amount per employee 
     dol_amt_paid_per_employee = int(case.bw_atp_amt/case.ee_atp_cnt)
 
-    if (dol_amt_paid_per_employee = 0):
+    if (dol_amt_paid_per_employee == 0):
         dol_severity = 'Violation Level = Green: Employer was not found to violate employee wages or data was insufficient to determine if there was a violation'
         dol_rating = 5
     elif (amt_paid_per_employee > 1000):
@@ -147,7 +147,7 @@ def business_detail():
         'dol_amt_paid_per_employee' : dol_amt_paid_per_employee,
         'dol_severity' : dol_severity,
         'dol_rating' : dol_rating,
-        'dol_relevancy' dol_relevancy
+        'dol_relevancy' : dol_relevancy
         }
 
     # TBD: Could use a mock data source here for testing/getting FE to work

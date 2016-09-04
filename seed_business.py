@@ -29,19 +29,23 @@ from googleplaces import GooglePlaces, types, lang
 #Google Maps API Key (activated) for GeoCoding
 API_KEY = os.environ['GOOGLE_MAP_API']
 
-def seed_db():
+def seed_db(runonce):
     """Seed database with case and business info using dol_data_subset.csv and Google business info."""
     # i think this should be cases
 
     # print to console
     print "Seeding Database Tables"
 
-    # Delete all rows in tables, so if we need to run this a second time,
-    # we wont be trying to add duplicate items
-    Case.query.delete()
-    Business.query.delete()
-    Violation.query.delete()
-    GoogleReview.query.delete()
+
+    # only allow database to be wiped once during program run (at initialization)
+    if runonce == 0:
+        # Delete all rows in tables, so if we need to run this a second time,
+        # we wont be trying to add duplicate items
+        Case.query.delete()
+        Business.query.delete()
+        Violation.query.delete()
+        GoogleReview.query.delete()
+        runonce = 1
 
     # Parse csv file this wayrather than using rstrip and split on ","
     # because some of the addresses have commas & suites and special chars
@@ -75,43 +79,45 @@ def seed_db():
             response = google_maps_address_to_json(street_addr_1_txt, cty_nm, st_cd)
             latitude, longitude = latlong_from_json(response)
             place_id = google_place_id(trade_nm, latitude, longitude)
-            g_business_dict, reviews_list = google_place_details(place_id):
+            g_business_dict, reviews_dict = google_place_details(place_id)
 
-
+            print g_business_dict
             # Seed business table with case info from row (local vars) + g_business_dict
             # Do not specify bus_id (PK) here as it's autoincrementing and doesn't need to be passed in
+
+            # * * * ERROR TBD: Need to the dol_dict info seed file from server file
             business = Business(place_id=place_id,
                                 latitude=latitude,
                                 longitude=longitude,
                                 trade_nm=trade_nm,
-                                legal_nm=legal_nm,
+                                legal_name=legal_name,
                                 street_addr_1_txt=street_addr_1_txt,
                                 cty_nm=cty_nm,
                                 st_cd=st_cd,
                                 zip_cd=zip_cd,
-                                g_international_phone_number=g_business_dict.g_international_phone_number,
-                                g_primary_img_url=g_business_dict.g_primary_img_url,
-                                g_weekday_text=g_business_dict.g_weekday_text,
-                                g_overall_rating=g_business_dict.g_overall_rating,
-                                g_maps_url=g_business_dict.g_maps_url,
-                                g_website=g_business_dict.g_website,
-                                g_vicinity=g_business_dict.g_vicinity,
-                                dol_rating=dol_rating,
-                                dol_severity=dol_severity,
-                                dol_relevancy=dol_relevancy
+                                g_international_phone_number=g_business_dict['g_international_phone_number'],
+                                g_weekday_text=g_business_dict['g_weekday_text'],
+                                g_overall_rating=g_business_dict['g_overall_rating'],
+                                g_maps_url=g_business_dict['g_maps_url'],
+                                g_website=g_business_dict['g_website'],
+                                g_vicinity=g_business_dict['g_vicinity'],
+                                dol_rating=dol_dict['dol_rating'],
+                                dol_severity=dol_dict['dol_severity'],
+                                dol_relevancy=dol_dict['dol_relevancy']
                                 )
 
             db.session.add(business)
             db.session.commit(business)
 
             # Create instance review of GoogleReview and seed googlereviews table
+            # use reviews_dict from the google_place_details return statement
             # (orange model.py=white seed_business.py)
             review = GoogleReview(bus_id=bus_id,
-                                author_name=author_name,
-                                author_url=author_url,
-                                language=language,
-                                rating=rating,
-                                text=text
+                                author_name=reviews_dict['author_name'],
+                                author_url=reviews_dict['author_url'],
+                                language=reviews_dict['language'],
+                                rating=reviews_dict['rating'],
+                                text=reviews_dict['text']
                                 )
 
 
@@ -140,8 +146,6 @@ def seed_db():
 
             db.session.add(case)
             db.session.commit(case)
-
-
 
     return None
 
@@ -321,22 +325,19 @@ def google_place_details(place_id):
     print json.dumps(vicinity, indent=4)
 
     # Create dictionary to store all the g_business info and return to main function
-    g_business_dict = {'status':status,
-                        'icon'=icon,
-                        'g_international_phone_number' = international_phone_number
+    g_business_dict = {'g_status' : status,
+                        'g_icon' : icon,
+                        'g_international_phone_number' : international_phone_number,
+                        'g_name' : name,
+                        'g_opening_hours' : opening_hours,
+                        'g_weekday_text' : weekday_text,
+                        'g_overall_rating' : overall_rating,
+                        'g_types' : types,
+                        'g_maps_url' : url,
+                        'g_website' : website,
+                        'g_vicinity' : vicinity
+                        }
 
-
-
-    }
-    # ****************************
-    # TBD: Return 2 things:
-    # 1. Create dictionary to store all the g_business info and return to main function
-    # 2. Return reviews to main function with another function call to do the review processing separately from here down
-    # named: g_business_dict, reviews_list
-
-    # dictionary to store all the g_business info and return to main function
-    reviews_list = {}
-    # TBD: BREAK THIS OUT
 
     #TBD: add a try/except (may not have any reviews)
     reviews = result['reviews']
@@ -355,26 +356,19 @@ def google_place_details(place_id):
         text = review['text']
         print json.dumps(text, indent=4)
 
-        # * * * TBD: Seed my review table here not create dictionary and access by bus_id (FK)
         
-        seed_google_review_table(author_name, author_url, language, rating, text)
-        # create a dictionary to store all of the google photo details
-        # reviews_dict = {
-        #     'author_name' : author_name,
-        #     'author_url' : author_url,
-        #     'language' : language,
-        #     # 'profile_photo_url' : profile_photo_url,
-        #     'rating' : rating,
-        #     'text' : text,
-        #     # 'key' : os.environ['GOOGLE_MAP_API']
-        #     }
+        # dictionary to store all the g_business info and return to main function
+        reviews_dict = {
+            'author_name' : author_name,
+            'author_url' : author_url,
+            'language' : language,
+            'rating' : rating,
+            'text' : text
+            }
         
         # sys.exit(0)
 
-    # **** STOPPED HERE ****
-
-
-    return g_business_dict, reviews_list
+    return g_business_dict, reviews_dict
 
     # except Exception:
     #     print "Something went wrong"
@@ -401,5 +395,6 @@ if __name__ == "__main__":
     #db.droptable # ??? --- or command line(> dropdb dol_project) or in each table
     db.create_all()
 
-    seed_db()
+    runonce = 0
+    seed_db(runonce)
 
