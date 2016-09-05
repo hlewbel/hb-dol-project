@@ -13,7 +13,7 @@
             <p>Business Name: <b>{{ business.trade_nm}}</b></p>
             <p>Business' Parent Company: <b> {{ business.legal_nm}}
             <p>Address: <b>{{ business.street_addr_1_txt }}, &nbsp; {{business.cty_nm}}, &nbsp; {{business.st_cd}} &nbsp; {{business.zip_cd}}</b></p><br><br>
-            
+
             <h1>Google Business Info:</h1>
             <p>Google Business Rating: <b>{{ business.g_overall_rating }}</b></p>
             <p>International Phone Number: <b>{{ business.g_international_phone_number }}</b></p>
@@ -30,7 +30,7 @@
             <p>DOL Severity: <b>{{ business.dol_severity }}</b></p>
             <p>DOL Relevancy: <b>{{ business.dol_relevancy }}</b></p><br>
             {% for case_for_business in cases_for_business %}
-              {% if case.case_id != case_for_business.case_id) %}
+              {% if case.case_id != case_for_business.case_id %}
                 <p>Other Cases associated with this business: <b>{{ case_for_business.case_id }}</b></p>
               {% endif %}
             {% endfor %}

@@ -101,11 +101,14 @@ def business_detail():
     This encompasses both Google Business info and DOL data
     """
 
+    import ipdb; ipdb.set_trace()
+
     search_trade_nm = request.args.get("trade_nm")
     search_cty_nm = request.args.get("cty_nm")
 
     # Get a single case with matching trade name and city
-    case = Case.query.filter(trade_nm==search_trade_nm,cty_nm==search_cty_nm).first()
+    case = Case.query.filter(Case.trade_nm==search_trade_nm,Case.cty_nm==search_cty_nm).first()
+
     if not case:
         #add a flash message (shopping cart)
         return redirect('/')
@@ -131,13 +134,13 @@ def business_detail():
     if (dol_amt_paid_per_employee == 0):
         dol_severity = 'Violation Level = Green: Employer was not found to violate employee wages or data was insufficient to determine if there was a violation'
         dol_rating = 5
-    elif (amt_paid_per_employee > 1000):
+    elif (dol_amt_paid_per_employee > 1000):
         dol_severity = 'Violation Level = Red: Employer had to pay more than $1000 per employee'
         dol_rating = 1
-    elif (amt_paid_per_employee > 499) and (amt_paid_per_employee < 1001):
+    elif (dol_amt_paid_per_employee > 499) and (amt_paid_per_employee < 1001):
         dol_severity = 'Violation Level = Orange: Employer had to pay each employee between $500-$1000'
         dol_rating = 3
-    elif (amt_paid_per_employee < 500):
+    elif (dol_amt_paid_per_employee < 500):
         dol_severity = 'Violation Level = Yellow: Employer had to pay each employee less than $500'
         dol_rating = 4
 

@@ -415,6 +415,6 @@ if __name__ == "__main__":
     #db.droptable # ??? --- or command line(> dropdb dol_project) or in each table
     db.create_all()
 
-    droptables = False
+    droptables = True
     seed_db(droptables)
 

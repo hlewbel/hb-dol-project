@@ -40,8 +40,8 @@ class Business(db.Model):
     g_website = db.Column(db.String(258), nullable=True)
     g_vicinity = db.Column(db.String(120), nullable=True)
     dol_rating = db.Column(db.Integer, nullable=True)      
-    dol_severity = db.Column(db.Numeric(12,2), nullable=True)    #(bw_atp_amt/employee)
-    dol_relevancy = db.Column(db.Integer, nullable=True)         # TBD
+    dol_severity = db.Column(db.String(1024), nullable=True)    #(bw_atp_amt/employee)
+    dol_relevancy = db.Column(db.String(1024), nullable=True)         # TBD
 
     # Define relationship from Business to GoogleReview table for each business
     # using it exp: google_review_instance.businesses
