@@ -53,11 +53,11 @@ def case_list():
 def business_list():
     """Show list of cases."""
 
-    business = Business.query.all()
+    businesses = Business.query.all()
     # cases = Case.query.order_by('case_id').all()
 
     #Q: How to link to a specific case and render the next page?
-    return render_template("business_list.html", business=business)
+    return render_template("business_list.html", businesses=businesses)
 
 @app.route("/about")
 def about():
@@ -142,13 +142,24 @@ def business_detail():
         dol_rating = 4
 
 
-    #rating,severity,relevancy
-    dol_calc_dict = {
-        'dol_amt_paid_per_employee' : dol_amt_paid_per_employee,
-        'dol_severity' : dol_severity,
-        'dol_rating' : dol_rating,
-        'dol_relevancy' : dol_relevancy
-        }
+    # #rating,severity,relevancy
+    # dol_calc_dict = {
+    #     'dol_amt_paid_per_employee' : dol_amt_paid_per_employee,
+    #     'dol_severity' : dol_severity,
+    #     'dol_rating' : dol_rating,
+    #     'dol_relevancy' : dol_relevancy
+    #     }
+
+    business.dol_severity = dol_severity
+    business.dol_rating = dol_rating
+    business.dol_relevancy = dol_relevancy
+
+    db.session.add(business)
+    db.session.commit()
+
+    cases_for_business = Case.query.filter(bus_id==business.bus_id).all()
+
+    # * * * STOPPED HERE 9/4 * * *
 
     # TBD: Could use a mock data source here for testing/getting FE to work
     # hard code it... online json editor to create json file and put it in here as paste
@@ -161,8 +172,8 @@ def business_detail():
     #         "longitude":47.3, "place_id": 234}
 
 
-
-    return render_template("bus-review.html", business=business, case=case, dol_calc_dict=dol_calc_dict)
+    # return render_template("bus-review.html", business=business, case=case, dol_calc_dict=dol_calc_dict)
+    return render_template("bus-review.html", business=business, case=case, cases_for_business=cases_for_business)
 
 
 if __name__ == "__main__":

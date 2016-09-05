@@ -29,33 +29,34 @@ from googleplaces import GooglePlaces, types, lang
 #Google Maps API Key (activated) for GeoCoding
 API_KEY = os.environ['GOOGLE_MAP_API']
 
-def seed_db(runonce):
+def seed_db(droptables):
     """Seed database with case and business info using dol_data_subset.csv and Google business info."""
     # i think this should be cases
 
     # print to console
     print "Seeding Database Tables"
 
+    # import ipdb; ipdb.set_trace()
 
     # only allow database to be wiped once during program run (at initialization)
-    if runonce == 0:
+    if droptables:
         # Delete all rows in tables, so if we need to run this a second time,
         # we wont be trying to add duplicate items
         Case.query.delete()
         Business.query.delete()
         Violation.query.delete()
         GoogleReview.query.delete()
-        runonce = 1
 
     # Parse csv file this wayrather than using rstrip and split on ","
     # because some of the addresses have commas & suites and special chars
     with open('test_data/dol_data_subset.csv') as csvfile:
         dol_file = csv.reader(csvfile)
         for row in dol_file:
-            case_id, trade_nm, legal_name, street_addr_1_txt, cty_nm, \
+            case_id, trade_nm, legal_nm, street_addr_1_txt, cty_nm, \
             st_cd, zip_cd, naic_cd, naics_code_description, case_violtn_cnt, \
             cmp_assd_ee_violtd_cnt, ee_violtd_cnt, bw_atp_amt, ee_atp_cnt, \
             findings_start_date, findings_end_date = row[:16]
+
 
             # The date is in the file as daynum-month_abbreviation-year;
             # Convert to datetime object. Date comes in as M/DD/YY (%m/%d/%y)
@@ -74,11 +75,13 @@ def seed_db(runonce):
                             naics_code_description=naics_code_description)
                 db.session.add_all([violation])
 
-
             # Call Google functions to get Google business and review data via APIs
             response = google_maps_address_to_json(street_addr_1_txt, cty_nm, st_cd)
             latitude, longitude = latlong_from_json(response)
             place_id = google_place_id(trade_nm, latitude, longitude)
+            if place_id is None:
+                continue
+
             g_business_dict, reviews_dict = google_place_details(place_id)
 
             print g_business_dict
@@ -90,7 +93,7 @@ def seed_db(runonce):
                                 latitude=latitude,
                                 longitude=longitude,
                                 trade_nm=trade_nm,
-                                legal_name=legal_name,
+                                legal_nm=legal_nm,
                                 street_addr_1_txt=street_addr_1_txt,
                                 cty_nm=cty_nm,
                                 st_cd=st_cd,
@@ -101,13 +104,18 @@ def seed_db(runonce):
                                 g_maps_url=g_business_dict['g_maps_url'],
                                 g_website=g_business_dict['g_website'],
                                 g_vicinity=g_business_dict['g_vicinity'],
-                                dol_rating=dol_dict['dol_rating'],
-                                dol_severity=dol_dict['dol_severity'],
-                                dol_relevancy=dol_dict['dol_relevancy']
+                                # dol_rating=dol_dict['dol_rating'],
+                                # dol_severity=dol_dict['dol_severity'],
+                                # dol_relevancy=dol_dict['dol_relevancy']
+                                dol_rating=None,
+                                dol_severity=None,
+                                dol_relevancy=None
                                 )
 
             db.session.add(business)
-            db.session.commit(business)
+            db.session.commit()
+
+            bus_id = business.bus_id
 
             # Create instance review of GoogleReview and seed googlereviews table
             # use reviews_dict from the google_place_details return statement
@@ -117,12 +125,12 @@ def seed_db(runonce):
                                 author_url=reviews_dict['author_url'],
                                 language=reviews_dict['language'],
                                 rating=reviews_dict['rating'],
-                                text=reviews_dict['text']
+                                text=reviews_dict['text'][0:10000]
                                 )
 
 
             db.session.add(review)
-            db.session.commit(review)
+            db.session.commit()
 
             # Create an instance case of Case and seed cases table
             # (orange model.py=white seed_business.py)
@@ -131,7 +139,7 @@ def seed_db(runonce):
                         start_date=start_date,
                         end_date=end_date,
                         trade_nm=trade_nm,
-                        legal_name=legal_name,
+                        legal_nm=legal_nm,
                         street_addr_1_txt=street_addr_1_txt,
                         cty_nm=cty_nm,
                         st_cd=st_cd,
@@ -145,7 +153,7 @@ def seed_db(runonce):
                         )
 
             db.session.add(case)
-            db.session.commit(case)
+            db.session.commit()
 
     return None
 
@@ -289,40 +297,43 @@ def google_place_details(place_id):
     response = json.loads(json_response.read())
     # print json.dumps(response, indent=4)
 
-    status = response['status']
-    print json.dumps(status, indent=4)
+    status = response.get('status')
+    # print json.dumps(status, indent=4)
 
     result = response['result']
     # print json.dumps(result, indent=4)
-    icon = result['icon']
-    print json.dumps(icon, indent=4)
-    international_phone_number = result['international_phone_number']
-    print json.dumps(international_phone_number, indent=4)    
-    name = result['name']
-    print json.dumps(name, indent=4)
-    opening_hours = result['opening_hours']
-    print json.dumps(opening_hours, indent=4)
+    icon = result.get('icon')
+    # print json.dumps(icon, indent=4)
+    international_phone_number = result.get('international_phone_number')
+    # print json.dumps(international_phone_number, indent=4)    
+    name = result.get('name')
+    # print json.dumps(name, indent=4)
+    opening_hours = result.get('opening_hours')
+    # print json.dumps(opening_hours, indent=4)
     # open_now = opening_hours['open_now']
     # print json.dumps(open_now, indent=4)
 
-    json_weekday_text = opening_hours['weekday_text']
-    print json.dumps(json_weekday_text, indent=4)
-    #convert list to string w/ | delim 
-    #(TBD: convert back when read from db, split on |. pass to JS front end)
-    weekday_text = '|'.join(json_weekday_text)
-    print weekday_text
-
-    overall_rating = result['rating']
-    print "overall rating is: "
-    print json.dumps(overall_rating, indent=4)
-    types = result['types']
-    print json.dumps(types, indent=4)
-    url = result['url']
-    print json.dumps(url, indent=4)
-    website = result['website']
-    print json.dumps(website, indent=4)
-    vicinity = result['vicinity']
-    print json.dumps(vicinity, indent=4)
+    if opening_hours is not None:
+        json_weekday_text = opening_hours.get('weekday_text')
+        # print json.dumps(json_weekday_text, indent=4)
+        #convert list to string w/ | delim 
+        #(TBD: convert back when read from db, split on |. pass to JS front end)
+        weekday_text = '|'.join(json_weekday_text)
+        # print weekday_text
+    else:
+        weekday_text = None
+    # overall_rating = result['rating']
+    overall_rating = result.get('rating')
+    # print "overall rating is: "
+    # print json.dumps(overall_rating, indent=4)
+    types = result.get('types')
+    # print json.dumps(types, indent=4)
+    url = result.get('url')
+    # print json.dumps(url, indent=4)
+    website = result.get('website')
+    # print json.dumps(website, indent=4)
+    vicinity = result.get('vicinity')
+    # print json.dumps(vicinity, indent=4)
 
     # Create dictionary to store all the g_business info and return to main function
     g_business_dict = {'g_status' : status,
@@ -340,32 +351,41 @@ def google_place_details(place_id):
 
 
     #TBD: add a try/except (may not have any reviews)
-    reviews = result['reviews']
+    reviews = result.get('reviews')
 
-    for review in reviews:
-        author_name = review['author_name']
-        print json.dumps(author_name, indent=4)
-        author_url = review['author_url']
-        print json.dumps(author_url, indent=4)
-        language = review['language']
-        print json.dumps(language, indent=4)
-        # profile_photo_url = review['profile_photo_url']
-        # print json.dumps(profile_photo_url, indent=4)
-        rating = review['rating']
-        print json.dumps(rating, indent=4)
-        text = review['text']
-        print json.dumps(text, indent=4)
+    if reviews is not None:
+        for review in reviews:
+            author_name = review.get('author_name')
+            # print json.dumps(author_name, indent=4)
+            author_url = review.get('author_url')
+            # print json.dumps(author_url, indent=4)
+            language = review.get('language')
+            # print json.dumps(language, indent=4)
+            # profile_photo_url = review['profile_photo_url']
+            # print json.dumps(profile_photo_url, indent=4)
+            rating = review.get('rating')
+            # print json.dumps(rating, indent=4)
+            text = review.get('text')
+            # print json.dumps(text, indent=4)
 
-        
-        # dictionary to store all the g_business info and return to main function
-        reviews_dict = {
-            'author_name' : author_name,
-            'author_url' : author_url,
-            'language' : language,
-            'rating' : rating,
-            'text' : text
-            }
-        
+            
+            # dictionary to store all the g_business info and return to main function
+            reviews_dict = {
+                'author_name' : author_name,
+                'author_url' : author_url,
+                'language' : language,
+                'rating' : rating,
+                'text' : text
+                }
+    else:
+            reviews_dict = {
+                'author_name' : 'No author name',
+                'author_url' : 'No author url',
+                'language' : 'None',
+                'rating' : 0,
+                'text' : "No text"
+                }
+
         # sys.exit(0)
 
     return g_business_dict, reviews_dict
@@ -395,6 +415,6 @@ if __name__ == "__main__":
     #db.droptable # ??? --- or command line(> dropdb dol_project) or in each table
     db.create_all()
 
-    runonce = 0
-    seed_db(runonce)
+    droptables = False
+    seed_db(droptables)
 

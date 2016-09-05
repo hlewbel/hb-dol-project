@@ -6,8 +6,10 @@
   <ul>
   {% for business in businesses %}
     <li>
-      <a href="/businesses/{{ business.bus_id }}">
-        Business ID: {{ business.bus_id }}, Business Name: {{business.trade_nm}}</a>
+        Business ID:&nbsp;
+      <a href="/businesses/{{ business.bus_id }}">{{ business.bus_id }}</a>
+      &nbsp; &nbsp; &nbsp; Business Name:&nbsp;
+      <a href="/businesses/{{ business.trade_nm }}">{{ business.trade_nm}}</a>
     </li>
   {% endfor %}
   </ul>

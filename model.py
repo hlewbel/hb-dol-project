@@ -10,7 +10,6 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-
 ##############################################################################
 # Model definitions written in Python using SQLAlchemy syntax
 # db is inheriting from the .Model class and gives the structure
@@ -23,7 +22,7 @@ class Business(db.Model):
     # column is a method on db that allows you to create a column in database
     # set nullable based on seeding rather than just on front end
     bus_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    place_id = db.Column(db.Integer, nullable=False)
+    place_id = db.Column(db.String(128), nullable=False)
     latitude = db.Column(db.Numeric(9,6), nullable=False)
     longitude = db.Column(db.Numeric(9,6), nullable=False)
     trade_nm = db.Column(db.String(128), nullable=False)
@@ -33,16 +32,16 @@ class Business(db.Model):
     st_cd = db.Column(db.String(64), nullable=False)
     zip_cd = db.Column(db.String(15), nullable=True)
     g_international_phone_number = db.Column(db.String(64), nullable=True)
-    g_primary_img_url = db.Column(db.String(255), nullable=True)
-    g_weekday_text =  db.Column(db.String(255), nullable=True)
-    g_overall_rating = db.Column(db.Numeric(1,1), nullable=False)
+    g_primary_img_url = db.Column(db.String(260), nullable=True)
+    g_weekday_text =  db.Column(db.String(1059), nullable=True)
+    g_overall_rating = db.Column(db.Numeric(2,1), nullable=True)
     # g_maps_types =                                          #Q: What type?
-    g_maps_url = db.Column(db.String(255), nullable=True)
-    g_website = db.Column(db.String(255), nullable=True)
+    g_maps_url = db.Column(db.String(257), nullable=True)
+    g_website = db.Column(db.String(258), nullable=True)
     g_vicinity = db.Column(db.String(120), nullable=True)
-    dol_rating = db.Column(db.Integer, nullable=False)      
-    dol_severity = db.Column(db.Numeric(12,2), nullable=False)    #(bw_atp_amt/employee)
-    dol_relevancy = db.Column(db.Integer, nullable=False)         # TBD
+    dol_rating = db.Column(db.Integer, nullable=True)      
+    dol_severity = db.Column(db.Numeric(12,2), nullable=True)    #(bw_atp_amt/employee)
+    dol_relevancy = db.Column(db.Integer, nullable=True)         # TBD
 
     # Define relationship from Business to GoogleReview table for each business
     # using it exp: google_review_instance.businesses
@@ -72,8 +71,8 @@ class Case(db.Model):
     
     # columns below come from DOL data - *** check the datatypes!!
     trade_nm = db.Column(db.String(100), nullable=False)
-    legal_name = db.Column(db.String(100), nullable=True)
-    street_addr_1_txt = db.Column(db.String(255), nullable=False)
+    legal_nm = db.Column(db.String(100), nullable=True)
+    street_addr_1_txt = db.Column(db.String(256), nullable=False)
     cty_nm = db.Column(db.String(100), nullable=False)
     st_cd = db.Column(db.String(2), nullable=False)
     zip_cd = db.Column(db.Integer, nullable=False)
@@ -92,9 +91,7 @@ class Case(db.Model):
     #   processed in the seed.py file
     start_date = db.Column(db.DateTime, nullable=False)
     end_date = db.Column(db.DateTime, nullable=False)
-    #violation_code = db.Column(db.Integer, db.ForeignKey(Violation.violation_code), nullable=False)
-    #number_violations = db.Column(db.Integer, nullable=True)
-    #employees_violated = db.Column(db.Integer, nullable=True)
+
     # Foreign keys should have specificity for nullable when not primary key
     bus_id = db.Column(db.Integer, db.ForeignKey('businesses.bus_id'), nullable=True)
 
@@ -137,7 +134,7 @@ class Violation(db.Model):
     # naic_cd maps to DOL column of naic_cd
     # naics_code_description maps to DOL column of naics_code_description
     naic_cd = db.Column(db.Integer, autoincrement=False, primary_key=True)
-    naics_code_description = db.Column(db.String(255), nullable=False)
+    naics_code_description = db.Column(db.String(500), nullable=False)
     
     
     def __repr__(self):
@@ -156,10 +153,10 @@ class GoogleReview(db.Model):
     review_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     bus_id = db.Column(db.Integer, db.ForeignKey('businesses.bus_id'), nullable=False)
     author_name = db.Column(db.String(64), nullable=False)
-    author_url = db.Column(db.String(8), nullable=True)
-    language = db.Column(db.String(8), nullable=True)
+    author_url = db.Column(db.String(501), nullable=True)
+    language = db.Column(db.String(32), nullable=True)
     rating = db.Column(db.Integer, nullable=False)
-    text = db.Column(db.String(510), nullable=True)
+    text = db.Column(db.String(10000), nullable=True)
 
     
     
