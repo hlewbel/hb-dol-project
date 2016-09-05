@@ -11,6 +11,9 @@ Description: Create a consumer-friendly accessible & responsive website that all
 
 US DOL Data: http://ogesdw.dol.gov/views/data_summary.php - this is the key/column listing: whd_data_dictionary  and this is the full database (large): whd_whisard
 
+*** Note alt text for images - re accessibility
+** WAS GOING TO USE JAVASCRIPT/JQUERY FOR SENDING FORM TO DOL (BUTTON CLICKS, ETC)
+
 Project Outline:
 
 Tables:

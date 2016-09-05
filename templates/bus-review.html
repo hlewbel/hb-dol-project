@@ -2,7 +2,7 @@
 {% block content %}
 
 <div class="well spaced" style="width:97%;">
-<h1>Business Info and Department of Labor Wage Violations for: {{ business.trade_nm }} </h1>
+<h2>Business Info and Department of Labor Wage Violations for: {{ business.trade_nm }} </h2>
 
 <div class="row">
 
@@ -10,11 +10,11 @@
 
           <div class="bus-details">
             <p>Business ID: <b>{{ business.bus_id }}</b></p>
-            <p>Business Name: <b>{{ business.trade_nm}}</b></p>
-            <p>Business' Parent Company: <b> {{ business.legal_nm}}
-            <p>Address: <b>{{ business.street_addr_1_txt }}, &nbsp; {{business.cty_nm}}, &nbsp; {{business.st_cd}} &nbsp; {{business.zip_cd}}</b></p><br><br>
+            <p>Business Name: <b>{{ business.trade_nm }}</b></p>
+            <p>Address: <b>{{ business.street_addr_1_txt }}, &nbsp; {{business.cty_nm}}, &nbsp; {{business.st_cd}} &nbsp; {{business.zip_cd}}</b></p>
+            <p>Business' Parent Company: <b> {{ business.legal_nm}}</b></p><br><br>
 
-            <h1>Google Business Info:</h1>
+            <h2>Google Business Info:</h2>
             <p>Google Business Rating: <b>{{ business.g_overall_rating }}</b></p>
             <p>International Phone Number: <b>{{ business.g_international_phone_number }}</b></p>
             <p>Weekday Hours: <b>{{ business.g_weekday_text }}</b></p>
@@ -24,8 +24,18 @@
             <p>Latitude: <b>{{ business.latitude }}</b></p>
             <p>Longitude: <b>{{ business.longitude }}</b></p>
             <p>Place ID: <b>{{ business.place_id }}</b></p><br><br>
+              {% for review_for_business in reviews_for_business %}
+                  <p>Google Business Reviews for <b>{{ business.trade_nm }}</b></p>
+                  <p>Review ID: <b>{{ review_for_business.review_id }}</b></p>
+                  <p>Author Name: <b>{{ review_for_business.author_name }}</b></p>
+                  <p>Author URL: <b>{{ review_for_business.author_url }}</b></p>
+                  <p>Language: <b>{{ review_for_business.language }}</b></p>
+                  <p>Review Rating: <b>{{ review_for_business.rating }}</b></p>
+                  <p>Review Text: <b>{{ review_for_business.text }}</b></p>
+              {% endfor %}
 
-            <h2>U.S. Department of Labor Info for {{ case.case_id }}</h2>
+
+            <h2>U.S. Department of Labor Details for Case {{ case.case_id }}</h2>
             <p>DOL Rating: <b>{{ business.dol_rating }}</b></p>
             <p>DOL Severity: <b>{{ business.dol_severity }}</b></p>
             <p>DOL Relevancy: <b>{{ business.dol_relevancy }}</b></p><br>

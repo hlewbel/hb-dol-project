@@ -1,22 +1,50 @@
 {% extends 'base.html' %}
 {% block content %}
-	<div id="homepage-block">
-    	<h1 id="homepage-title">Wage Justice</h1>
-    	form --> input box -> fill in and hit submit button --> sends new request to the server and generates new html page w/ results. use variable submitted in the form
-        <img src="/static/USDOL_Seal_circa_2015.svg.png" class="img-responsive" width=200px height=200px>
+<div id="homepage-block">
+   <br>
+   <h1 id="homepage-title" align="center">Wage Justice</h1>
+   <h3 id="tagline" align="center">Educating Consumers To Make Smart Business Decisions</h3><br>
 
-        <form action="/business" method="get">
+    <div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 left" id="leftcolimages" align="center">
+            <h3 id="h1left">Data Sources: The U.S. Department of Labor and Google Businesses</h3><br><br>
+            <div align="center" class="col-xs-6 col-sm-6 col-md-3 col-lg-3 left" id="imagesside">
+                <img src="/static/USDOL_Seal_circa_2015.svg.png" class="img-responsive" style="width:100%;" alt="Department of Labor Seal Image">
+                <br><br><br>
+            </div>
+            <div align="center" class="col-xs-6 col-sm-6 col-md-3 col-lg-3 left" id="imagesside">
+                <img src="/static/Wage-Hour-Division.gif" class="img-responsive" style="width:100%; padding-top:10px;" alt="Department of Labor Wage Hour Division Image">
+                <br><br><br>
+            </div>
+            <div align="center" class="col-xs-6 col-sm-6 col-md-3 col-lg-3 left" id="imagesside">
+                <img src="/static/Google-My-Business-Logo.jpg" class="img-responsive" style="width:100%;"alt="Google Maps Logo Image">
+                <br><br><br>
+            </div>
+            <div align="center" class="col-xs-6 col-sm-6 col-md-3 col-lg-3 left" id="imagesside">
+                <img src="/static/GoogleMapsLogo.png" class="img-responsive" style="width:100%;" alt="Google Maps Logo Image">
+                <br><br><br>
+            </div>
 
-            <label for="name-input">Business Name:</label>
-            <input type="text" name="trade_nm" id="bus-input" />
-
-            <label for="city-input">City Name:</label>
-            <input type="text" name="cty_nm" id="cty-input" />
-
-            <input type="submit" />
-
-        </form>
+        </div>
     </div>
+    <div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 right" align="center">
+            <h3 id="h1right">Wage Justice Database Search</h3>
+            <div class="col-md-4 col-md-offset-3">
+                <form action="/business" method="get">
+                    <label for="name-input"></label>
+                    <input type="text" name="trade_nm" class="form-control" placeholder="Business Name" id="bus-input" />
+                    <label for="city-input"></label>
+                    <input type="text" name="cty_nm" class="form-control" placeholder="City Name" id="cty-input" />
+                    <div>
+                        <br>
+                        <input type="submit" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 

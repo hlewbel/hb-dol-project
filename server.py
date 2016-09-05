@@ -144,15 +144,6 @@ def business_detail():
         dol_severity = 'Violation Level = Yellow: Employer had to pay each employee less than $500'
         dol_rating = 4
 
-
-    # #rating,severity,relevancy
-    # dol_calc_dict = {
-    #     'dol_amt_paid_per_employee' : dol_amt_paid_per_employee,
-    #     'dol_severity' : dol_severity,
-    #     'dol_rating' : dol_rating,
-    #     'dol_relevancy' : dol_relevancy
-    #     }
-
     business.dol_severity = dol_severity
     business.dol_rating = dol_rating
     business.dol_relevancy = dol_relevancy
@@ -161,8 +152,7 @@ def business_detail():
     db.session.commit()
 
     cases_for_business = Case.query.filter(bus_id==business.bus_id).all()
-
-    # * * * STOPPED HERE 9/4 * * *
+    reviews_for_business = GoogleReview.query.filter(bus_id==business.bus_id).all()
 
     # TBD: Could use a mock data source here for testing/getting FE to work
     # hard code it... online json editor to create json file and put it in here as paste
@@ -176,7 +166,8 @@ def business_detail():
 
 
     # return render_template("bus-review.html", business=business, case=case, dol_calc_dict=dol_calc_dict)
-    return render_template("bus-review.html", business=business, case=case, cases_for_business=cases_for_business)
+    return render_template("bus-review.html", business=business, case=case, cases_for_business=cases_for_business, reviews_for_business=reviews_for_business)
+    # return render_template("bus-review.html", business=business, case=case, cases_for_business=cases_for_business)
 
 
 if __name__ == "__main__":
