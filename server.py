@@ -101,7 +101,7 @@ def business_detail():
     This encompasses both Google Business info and DOL data
     """
 
-    import ipdb; ipdb.set_trace()
+    # import ipdb; ipdb.set_trace()
 
     search_trade_nm = request.args.get("trade_nm")
     search_cty_nm = request.args.get("cty_nm")
