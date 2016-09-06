@@ -1,17 +1,74 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="well spaced" style="width:50%;">
-  <h2>Cases</h2>
-  <ul>
-  {% for case in cases %}
-    <li>
-        Case ID:&nbsp;
-      <a href="/cases/{{ case.case_id }}">{{ case.case_id }}</a>
-      &nbsp; &nbsp; &nbsp; Business Name:&nbsp;
-      <a href="/cases/{{ case.trade_nm }}">{{ case.trade_nm}}</a>
-    </li>
-  {% endfor %}
-  </ul>
+<!-- <div class="well spaced" style="width:50%;" align="center">
+-->
+<!-- <div class="well spaced" style="width:97%;">
+-->   
+
+<div class="container" style="width:100%;">
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 left" align="center">
+
+            <div class="panel panel-default" style="padding:10px;">
+              <div class="panel-body" style="color:rgb(38,38,38);">
+
+                <h2 align="center">U.S. Department of Labor Wage and Hour Violation Cases</h2><br>
+                <table class="table table-bordered" border=1 style="padding:10px; color:#B0B0B0;" align="center">
+                    <tr>
+                        <th>Case ID</th>
+                        <th>Business Name</th>
+                        <th>Business City</th>
+                        <th>Case Start Date</th>
+                        <th>Case End Date</th>
+
+                    </tr>    
+                    {% for case in cases %}
+                    <tr>
+                        <td>{{ case.case_id }}</td>
+                        <td>{{ case.trade_nm }}</td>
+                        <td>{{ case.cty_nm }}</td>
+                        <th>{{ case.start_date }}</td>
+                        <th>{{ case.end_date }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 right" align="center">
+        <div class="panel panel-default">
+            <div class="panel-body" style="color:rgb(38,38,38);">
+
+                <h3 id="h1right" align="center">Wage Justice Database Search</h3>
+                <div class="col-md-6 col-md-offset-3">
+                    <form action="/business" method="get">
+                        <label for="name-input"></label>
+                        <input type="text" name="trade_nm" class="form-control" placeholder="Business Name" id="bus-input" />
+                        <label for="city-input"></label>
+                        <input type="text" name="cty_nm" class="form-control" placeholder="City Name" id="cty-input" />
+                        <div>
+                            <br>
+                            <input type="submit" />
+                            <br><br>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 right" align="center">
+        <div class="panel panel-default">
+            <div class="panel-body" style="color:rgb(38,38,38);">
+                <br><br>
+                <img src="/static/USDOL_Seal_circa_2015.svg.png" class="img-responsive" style="width:41%;" alt="Department of Labor Seal Image">
+                <br><br>
+            </div>
+        </div>
+    </div>
+
 </div>
 {% endblock %}
