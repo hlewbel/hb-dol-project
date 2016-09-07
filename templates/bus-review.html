@@ -1,52 +1,63 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="well spaced" style="width:97%;">
-<h2>Business Info and Department of Labor Wage Violations for: {{ business.trade_nm }} </h2>
+<div class="container" style="width:100%;">
+  <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 left">
 
-<div class="row">
+            <div class="panel panel-default" style="padding:10px;">
+                <div class="panel-body" style="color:rgb(38,38,38);">
 
-    <div class="col-xs-12 col-lg-6">
+                  <h2>Business Info and Department of Labor Wage Violations for: {{ business.trade_nm }} </h2>
 
-          <div class="bus-details">
-            <p><b>Business ID: </b>{{ business.bus_id }}</p>
-            <p><b>Business Name: </b>{{ business.trade_nm }}</p>
-            <p><b>Address: </b>{{ business.street_addr_1_txt }}, &nbsp; {{business.cty_nm}}, &nbsp; {{business.st_cd}} &nbsp; {{business.zip_cd}}</p>
-            <p><b>Business' Parent Company: </b> {{ business.legal_nm}}</p><br><br>
+                  <div class="row">
 
-            <h2>Google Business Info:</h2>
-            <p><b>Google Business Rating: </b>{{ business.g_overall_rating }}</p>
-            <p><b>International Phone Number: </b>{{ business.g_international_phone_number }}</p>
-            <p><b>Weekday Hours: </b>{{ business.g_weekday_text }}</p>
-            <p><b>Google Maps URL: </b>{{ business.g_maps_url }}</p>
-            <p><b>Website: </b>{{ business.g_website }}</p>
-            <p><b>Google Vicinity: </b>{{ business.g_vicinity }}</p>
-            <p><b>Latitude: </b>{{ business.latitude }}</p>
-            <p><b>Longitude: </b>{{ business.longitude }}</p>
-            <p><b>Place ID: </b>{{ business.place_id }}</p><br><br>
-            <h3>Google Business Reviews for <b>{{ business.trade_nm }}</h3>
-            {% for review_for_business in reviews_for_business %}
-                <p><b>Review ID: </b>{{ review_for_business.review_id }}</p>
-                <p><b>Author Name: </b>{{ review_for_business.author_name }}</p>
-                <p><b>Author URL: </b>{{ review_for_business.author_url }}</p>
-                <p><b>Language: </b>{{ review_for_business.language }}</p>
-                <p><b>Review Rating: </b>{{ review_for_business.rating }}</p>
-                <p><b>Review Text: </b>{{ review_for_business.text }}</p><br>
-            {% endfor %}
+                    <div class="col-xs-12 col-lg-12">
+
+                      <div class="bus-details">
+                        <p><b>Business ID: </b>{{ business.bus_id }}</p>
+                        <p><b>Business Name: </b>{{ business.trade_nm }}</p>
+                        <p><b>Address: </b>{{ business.street_addr_1_txt }}, &nbsp; {{business.cty_nm}}, &nbsp; {{business.st_cd}} &nbsp; {{business.zip_cd}}</p>
+                        <p><b>Business' Parent Company: </b> {{ business.legal_nm}}</p><br><br>
+
+                        <h2>Google Business Info:</h2>
+                        <p><b>Google Business Rating: </b>{{ business.g_overall_rating }}</p>
+                        <p><b>International Phone Number: </b>{{ business.g_international_phone_number }}</p>
+                        <p><b>Weekday Hours: </b>{{ business.g_weekday_text }}</p>
+                        <p><b>Google Maps URL: </b>{{ business.g_maps_url }}</p>
+                        <p><b>Website: </b>{{ business.g_website }}</p>
+                        <p><b>Google Vicinity: </b>{{ business.g_vicinity }}</p>
+                        <p><b>Latitude: </b>{{ business.latitude }}</p>
+                        <p><b>Longitude: </b>{{ business.longitude }}</p>
+                        <p><b>Place ID: </b>{{ business.place_id }}</p><br><br>
+                        <h3>Google Business Reviews for <b>{{ business.trade_nm }}</h3>
+                        {% for review_for_business in reviews_for_business %}
+                        <p><b>Review ID: </b>{{ review_for_business.review_id }}</p>
+                        <p><b>Author Name: </b>{{ review_for_business.author_name }}</p>
+                        <p><b>Author URL: </b>{{ review_for_business.author_url }}</p>
+                        <p><b>Language: </b>{{ review_for_business.language }}</p>
+                        <p><b>Review Rating: </b>{{ review_for_business.rating }}</p>
+                        <p><b>Review Text: </b>{{ review_for_business.text }}</p><br>
+                        {% endfor %}
 
 
-            <h2>U.S. Department of Labor Details for Case {{ case.case_id }}</h2>
-            <p><b>DOL Rating: </b>{{ business.dol_rating }}</p>
-            <p><b>DOL Severity: </b>{{ business.dol_severity }}</p>
-            <p><b>DOL Relevancy: </b>{{ business.dol_relevancy }}</p><br>
-            {% for case_for_business in cases_for_business %}
-              {% if case.case_id != case_for_business.case_id %}
-                <p><b>Other Cases associated with this business: </b>{{ case_for_business.case_id }}</p>
-              {% endif %}
-            {% endfor %}
-          </div>
+                        <h2>U.S. Department of Labor Details for Case {{ case.case_id }}</h2>
+                        <p><b>DOL Rating: </b>{{ business.dol_rating }}</p>
+                        <p><b>DOL Severity: </b>{{ business.dol_severity }}</p>
+                        <p><b>DOL Relevancy: </b>{{ business.dol_relevancy }}</p><br>
+                        {% for case_for_business in cases_for_business %}
+                        {% if case.case_id != case_for_business.case_id %}
+                        <p><b>Other Cases associated with this business: </b>{{ case_for_business.case_id }}</p>
+                        {% endif %}
+                        {% endfor %}
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
     </div>
-
-</div>
 </div>
 {% endblock %}

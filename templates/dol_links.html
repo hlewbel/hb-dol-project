@@ -1,34 +1,59 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="well spaced" style="width:97%;">
-<h1>Wage Justice Related Links<br></h1>
-<div class="row">
+<div class="container" style="width:100%;">
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 left">
 
-    <div class="col-xs-12 col-lg-6">
+            <div class="panel panel-default" style="padding:10px;">
+                <div class="panel-body" style="color:rgb(38,38,38);">
+                    <h3>Wage Justice Related Links<br></h3>
+                    <div class="row">
 
-          <div class="site-lower">
-            <footer class="footer wrap cf">
+                        <br><br>
 
-                <ul class="social cf">
-                    <li class="dolwhv"><a class="symbol" title="usdolwhmain" href="https://www.dol.gov/whd/#"><span>US Department of Labor Wage and Hour Violations Main Page</span></a></li>
-                    <li class="dolwhvdata"><a class="symbol" title="usdolwhdata" href="http://ogesdw.dol.gov/views/data_catalogs.php"><span>US Department of Labor Wage and Hour Violations Data</span></a></li>                    
-                    <li class="wagetheftcoalition"><a class="symbol" title="wagetheftcoalition" href="https://wagetheftcoalition.com"><span>Wage Theft Coalition</span></a></li>
-                    <li class="stanfordwagetheft"><a class="symbol" title="stanfordwagetheft" href="http://wage-theft.stanford.edu/"><span>Stanford and US Dept of Labor Wage Theft Project</span></a></li>
-                </ul>
+                        <div class="row">
+                            
+                            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                                <div class="thumbnail">
+                                  <img src="/static/us-dept-of-labor-logo.jpg" alt="U.S. Department of Labor Wage and Hour Division Image">
+                                  <div class="caption">
+                                    <h3>U.S. Department of Labor Wage and Hour Division</h3>
+                                    <p>The Wage and Hour mission is to promote and achieve compliance with labor standards to protect and enhance the welfare of the Nation's workforce.</p>
+                                    <p><a href="https://www.dol.gov/whd/#" class="btn btn-primary" role="button">Main Page</a> <a href="http://ogesdw.dol.gov/views/data_catalogs.php" class="btn btn-default" role="button">Data Catalogs</a></p>
+                                  </div>
+                                </div>
+                            </div>
 
-                <br><br>
-                <div>
-                    <img src="/static/us-dept-of-labor-logo.jpg" class="img-responsive" width=400px height=200px>
-                    <br>
+
+                            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                                <div class="thumbnail">
+                                  <img src="/static/Wage-Theft-Map-Logo.png" alt="U.S. Department of Labor Wage and Hour Violations Image">
+                                  <div class="caption">
+                                    <h3>Stanford and U.S. Dept of Labor Wage Theft Project</h3>
+                                    <p>Local SF Bay Area volunteers are working with publicly accessible data from the U.S. Department of Labor Wage and Hour Division to create visualizations showing violations within the United States</p>
+                                    <p><a href="http://wage-theft.stanford.edu/" class="btn btn-primary" role="button">Wage Theft Main Page</a> <a href="https://github.com/DataKind-SF" class="btn btn-default" role="button">DataKind GitHub</a></p>
+                                  </div>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                                <div class="thumbnail">
+                                  <img src="/static/wage-theft-logo.png" alt="Santa Clara Wage Theft Coalition Image">
+                                  <div class="caption">
+                                    <h3>Santa Clara Wage Theft Coalition</h3>
+                                    <p>Wage theft hurts workers, their families, and the taxpayer. It forces worker to seek County assistance, and it affects public health. It constitutes unfair competition that hurts decent employers. When workers, community organizations, honest employers, legal service workers, and labor unions work together, we can stop wage theft. The Coalition seeks to raise awareness about the problem of wage theft in Santa Clara County through ongoing outreach and education. We support worker-led and community- based strategies that give workers and their allies more tools to prevent wage theft and recover stolen wages. We seek more effective enforcement of existing laws through wage theft ordinances with permit revocation and wage lien provisions.</p>
+                                    <p><a href="https://wagetheftcoalition.com" class="btn btn-primary" role="button">Main Page</a> <a href="https://wagetheftcoalition.com/category/events/" class="btn btn-default" role="button">Events</a></p>
+                                  </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
                 </div>
-
-
-            </footer>
+            </div>
         </div>
     </div>
-    </div>
-
-</div>
 </div>
 {% endblock %}

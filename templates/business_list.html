@@ -3,7 +3,7 @@
 
 <div class="container" style="width:100%;">
     <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 left" align="center">
+        <div class="col-xs-12 col-sm-12 col-md-7 col-lg-7 left" align="center">
 
             <div class="panel panel-default" style="padding:10px;">
                 <div class="panel-body" style="color:rgb(38,38,38);">
@@ -31,17 +31,39 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 right" align="center">
-        <div class="panel panel-default">
-            <div class="panel-body" style="color:rgb(38,38,38);">
-                <br>
-                <img src="/static/Google-My-Business-Logo.jpg" class="img-responsive" style="width:52%; display:inline; padding-top:30px; padding-right:20px;" alt="Google Maps Logo Image">
-                <img src="/static/GoogleMapsLogo.png" class="img-responsive" style="width:35%; display:inline;" alt="Google Maps Logo Image">
-                <br><br><br>
+
+        <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5 right" align="center">
+            <div class="panel panel-default">
+                <div class="panel-body" style="color:rgb(38,38,38);">
+                    <h3 id="h1right" align="center">Wage Justice Database Search</h3>
+                    <div class="col-md-6 col-md-offset-3">
+                        <form action="/business" method="get">
+                            <label for="name-input"></label>
+                            <input type="text" name="trade_nm" class="form-control" placeholder="Business Name" id="bus-input" />
+                            <label for="place-input"></label>
+                            <input type="text" name="cty_nm" class="form-control" placeholder="Place ID" id="place-input" />
+                            <div>
+                                <br>
+                                <input type="submit" />
+                                <br><br>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
 
+        <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5 right" align="center">
+            <div class="panel panel-default">
+                <div class="panel-body" style="color:rgb(38,38,38);">
+                    <br>
+                    <img src="/static/Google-My-Business-Logo.jpg" class="img-responsive" style="width:52%; display:inline; padding-top:30px; padding-right:20px;" alt="Google Maps Logo Image">
+                    <img src="/static/GoogleMapsLogo.png" class="img-responsive" style="width:35%; display:inline;" alt="Google Maps Logo Image">
+                    <br><br><br>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>
 {% endblock %}
