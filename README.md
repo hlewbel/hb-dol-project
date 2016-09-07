@@ -28,6 +28,13 @@ Wage Justice's "Google Businesses" page shows a list of the businesses that are 
 
 <img src="static/dol-proj-screen-01.png">
 
+**Business Search**
+
+<img src="static/dol-proj-screen-07.png">
+<img src="static/dol-proj-screen-08.png">
+<img src="static/dol-proj-screen-09.png">
+<img src="static/dol-proj-screen-10.png">
+
 **U.S. Department of Labor Cases**
 
 <img src="static/dol-proj-screen-02.png">
